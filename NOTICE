@@ -17,3 +17,10 @@ Archivo — https://fonts.google.com/specimen/Archivo
 IBM Plex Mono — https://github.com/IBM/plex
 SIL Open Font License 1.1
 Fichiers concernés : vendor/fonts/*.woff2
+
+---
+
+supabase-js — https://github.com/supabase/supabase-js
+Licence MIT. Texte complet : vendor/supabase/LICENSE
+Fichier concerné : vendor/supabase/supabase.umd.js
+Aucune modification n'a été apportée à ce fichier.

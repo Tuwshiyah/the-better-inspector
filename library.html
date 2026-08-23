@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bibliothèque — The Better Inspector</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Crect%20width%3D%2724%27%20height%3D%2724%27%20rx%3D%275%27%20fill%3D%27%230f1216%27%2F%3E%3Crect%20x%3D%274.5%27%20y%3D%273%27%20width%3D%275%27%20height%3D%274.8%27%20fill%3D%27%23b4442e%27%2F%3E%3Crect%20x%3D%274.5%27%20y%3D%2710.2%27%20width%3D%275.2%27%20height%3D%2710.9%27%20fill%3D%27%23fff%27%2F%3E%3Cpath%20fill%3D%27%23fff%27%20fill-rule%3D%27evenodd%27%20d%3D%27M9.5%206H14.8a3.7%203.7%200%200%201%200%207.4H15.5a3.95%203.95%200%200%201%200%207.9H9.5Z%20M14.45%207.95a1.75%201.75%200%201%200%200%203.5%201.75%201.75%200%200%200%200-3.5Z%20M15.15%2015.35a2.1%202.1%200%201%200%200%204.2%202.1%202.1%200%200%200%200-4.2Z%27%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="./assets/ui.css">
+<style>
+  .bar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:18px}
+  .bar .grow{margin-left:auto}
+  .viewer{margin-top:20px}
+  .viewer-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px}
+  .viewer-head b{font-family:var(--mono);font-size:13px;font-weight:500}
+  .viewer-head .grow{margin-left:auto}
+  .row input[type=checkbox]{accent-color:var(--oxide);width:15px;height:15px;flex:none;cursor:pointer}
+  .row{grid-template-columns:auto 1fr auto}
+  @media(max-width:560px){.row{grid-template-columns:auto 1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="shell nav-in">
+    <a class="brand" href="index.html" id="brand"><b>The Better Inspector</b></a>
+    <div class="navlinks">
+      <a href="app.html">Importer</a>
+      <a class="cur" href="library.html">Bibliothèque</a>
+    </div>
+    <span class="who" id="who"></span>
+    <button class="btn btn-sm" id="out" type="button">Déconnexion</button>
+  </div>
+</nav>
+
+<main class="shell band">
+  <p class="sec-tag"><span>[ 02 ]</span><i></i><span class="gt">&gt;</span><b>Bibliothèque</b></p>
+  <h1>Tous vos <em>Markdown</em>.</h1>
+  <p class="sub">
+    Sélectionnez ce que vous voulez, copiez le tout d'un bloc. Chaque document
+    est précédé de son titre, ce qui donne un point de découpe naturel si vous
+    l'injectez dans un pipeline.
+  </p>
+
+  <div class="bar">
+    <button class="btn btn-sm" id="all" type="button">Tout sélectionner</button>
+    <button class="btn btn-sm" id="none" type="button">Tout désélectionner</button>
+    <button class="btn btn-sm btn-primary grow" id="copy" type="button"><s aria-hidden="true"></s>Copier la sélection</button>
+    <button class="btn btn-sm" id="dl" type="button">Télécharger .md</button>
+  </div>
+
+  <p class="msg" id="msg" role="status" aria-live="polite"></p>
+
+  <div class="rows" id="rows"></div>
+
+  <div class="stats" id="stats" hidden>
+    <div class="stat"><b id="s-tokens">—</b><span>Jetons sélectionnés</span></div>
+    <div class="stat"><b id="s-docs">—</b><span>Documents sélectionnés</span></div>
+    <div class="stat"><b id="s-total">—</b><span>Documents au total</span></div>
+  </div>
+
+  <div class="viewer" id="viewer" hidden>
+    <div class="viewer-head">
+      <b id="v-name"></b>
+      <button class="btn btn-sm grow" id="v-copy" type="button">Copier ce document</button>
+      <button class="btn btn-sm" id="v-close" type="button">Fermer</button>
+    </div>
+    <pre class="md-out" id="v-body"></pre>
+  </div>
+</main>
+
+<footer><div class="shell"><p>Seul le Markdown est conservé. Aucun PDF n'a été transmis.</p></div></footer>
+
+<script src="./vendor/supabase/supabase.umd.js"></script>
+<script type="module">
+import { requireUser, signOut, listDocuments, loadMarkdown, removeDocument,
+         humanError, humanDate, nf, MARK } from './assets/session.js';
+
+document.getElementById('brand').insertAdjacentHTML('afterbegin', MARK);
+
+const rows = document.getElementById('rows');
+const msg  = document.getElementById('msg');
+const stats = document.getElementById('stats');
+const viewer = document.getElementById('viewer');
+const say = (t, tone) => { msg.textContent = t; if (tone) msg.dataset.tone = tone; else delete msg.dataset.tone; };
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+let docs = [];
+
+const user = await requireUser();
+if (user) {
+  document.getElementById('who').textContent = user.email;
+  document.getElementById('out').addEventListener('click', signOut);
+  await refresh();
+}
+
+async function refresh() {
+  say('Chargement…');
+  try {
+    docs = await listDocuments();
+    render();
+    say('');
+  } catch (e) { say(humanError(e), 'err'); }
+}
+
+function render() {
+  if (!docs.length) {
+    rows.innerHTML = '<div class="empty"><strong>Rien encore ici.</strong>' +
+      'Convertissez un premier document depuis la page <a href="app.html" style="color:var(--oxide)">Importer</a>.</div>';
+    stats.hidden = true;
+    return;
+  }
+  rows.innerHTML = docs.map((d) =>
+    '<div class="row" data-id="' + d.id + '">' +
+      '<input type="checkbox" checked aria-label="Sélectionner ' + esc(d.name) + '">' +
+      '<div class="row-main"><div class="row-name">' + esc(d.name) + '</div>' +
+        '<div class="row-meta">' + esc(d.doc_type || '—') + ' · ' +
+        (d.pages || '?') + (d.pages > 1 ? ' pages' : ' page') +
+        ' · ≈ ' + nf(d.tokens) + ' jetons · ' + humanDate(d.created_at) + '</div></div>' +
+      '<div class="row-act">' +
+        '<button class="btn btn-sm" data-act="view">Voir</button>' +
+        '<button class="btn btn-sm btn-danger" data-act="del">Supprimer</button>' +
+      '</div></div>').join('');
+  stats.hidden = false;
+  tally();
+}
+
+function selected() {
+  return [...rows.querySelectorAll('.row')]
+    .filter((r) => r.querySelector('input').checked)
+    .map((r) => docs.find((d) => d.id === r.dataset.id))
+    .filter(Boolean);
+}
+
+function tally() {
+  const s = selected();
+  document.getElementById('s-tokens').textContent = '≈ ' + nf(s.reduce((a, d) => a + (d.tokens || 0), 0));
+  document.getElementById('s-docs').textContent = nf(s.length);
+  document.getElementById('s-total').textContent = nf(docs.length);
+}
+
+rows.addEventListener('change', tally);
+
+rows.addEventListener('click', async (e) => {
+  const btn = e.target.closest('button[data-act]');
+  if (!btn) return;
+  const row = btn.closest('.row');
+  const doc = docs.find((d) => d.id === row.dataset.id);
+  if (!doc) return;
+
+  if (btn.dataset.act === 'view') {
+    say('Ouverture…');
+    try {
+      const [full] = await loadMarkdown([doc.id]);
+      document.getElementById('v-name').textContent = full.name;
+      document.getElementById('v-body').textContent = full.markdown;
+      viewer.hidden = false;
+      viewer.scrollIntoView({ block: 'nearest' });
+      say('');
+    } catch (err) { say(humanError(err), 'err'); }
+    return;
+  }
+
+  // suppression : définitive, donc on demande confirmation
+  if (!confirm('Supprimer « ' + doc.name +' » ? Cette action est définitive.')) return;
+  try {
+    await removeDocument(doc.id);
+    docs = docs.filter((d) => d.id !== doc.id);
+    render();
+    say('« ' + doc.name + ' » supprimé.', 'ok');
+  } catch (err) { say(humanError(err), 'err'); }
+});
+
+document.getElementById('all').addEventListener('click', () => {
+  rows.querySelectorAll('input').forEach((i) => { i.checked = true; }); tally();
+});
+document.getElementById('none').addEventListener('click', () => {
+  rows.querySelectorAll('input').forEach((i) => { i.checked = false; }); tally();
+});
+
+/** Assemble la sélection en un seul Markdown, titré par document. */
+async function bundle() {
+  const s = selected();
+  if (!s.length) { say('Sélectionnez au moins un document.', 'err'); return null; }
+  say('Assemblage de ' + s.length + ' document(s)…');
+  const full = await loadMarkdown(s.map((d) => d.id));
+  const order = new Map(s.map((d, i) => [d.id, i]));
+  full.sort((a, b) => order.get(a.id) - order.get(b.id));
+  return full.map((d) => '# ' + d.name + '\n\n' + d.markdown).join('\n\n---\n\n');
+}
+
+document.getElementById('copy').addEventListener('click', async () => {
+  try {
+    const text = await bundle();
+    if (!text) return;
+    await navigator.clipboard.writeText(text);
+    say('Copié : ' + nf(text.length) + ' caractères, ≈ ' + nf(Math.round(text.length / 4)) + ' jetons.', 'ok');
+  } catch (err) { say(humanError(err), 'err'); }
+});
+
+document.getElementById('dl').addEventListener('click', async () => {
+  try {
+    const text = await bundle();
+    if (!text) return;
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/markdown' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = 'the-better-inspector.md';
+    a.click();
+    URL.revokeObjectURL(url);
+    say('Fichier téléchargé.', 'ok');
+  } catch (err) { say(humanError(err), 'err'); }
+});
+
+document.getElementById('v-close').addEventListener('click', () => { viewer.hidden = true; });
+document.getElementById('v-copy').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(document.getElementById('v-body').textContent);
+    say('Document copié.', 'ok');
+  } catch (err) { say(humanError(err), 'err'); }
+});
+</script>
+</body>
+</html>

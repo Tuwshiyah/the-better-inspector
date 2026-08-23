@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Importer — The Better Inspector</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Crect%20width%3D%2724%27%20height%3D%2724%27%20rx%3D%275%27%20fill%3D%27%230f1216%27%2F%3E%3Crect%20x%3D%274.5%27%20y%3D%273%27%20width%3D%275%27%20height%3D%274.8%27%20fill%3D%27%23b4442e%27%2F%3E%3Crect%20x%3D%274.5%27%20y%3D%2710.2%27%20width%3D%275.2%27%20height%3D%2710.9%27%20fill%3D%27%23fff%27%2F%3E%3Cpath%20fill%3D%27%23fff%27%20fill-rule%3D%27evenodd%27%20d%3D%27M9.5%206H14.8a3.7%203.7%200%200%201%200%207.4H15.5a3.95%203.95%200%200%201%200%207.9H9.5Z%20M14.45%207.95a1.75%201.75%200%201%200%200%203.5%201.75%201.75%200%200%200%200-3.5Z%20M15.15%2015.35a2.1%202.1%200%201%200%200%204.2%202.1%202.1%200%200%200%200-4.2Z%27%2F%3E%3C%2Fsvg%3E">
+<link rel="stylesheet" href="./assets/ui.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="shell nav-in">
+    <a class="brand" href="index.html" id="brand"><b>The Better Inspector</b></a>
+    <div class="navlinks">
+      <a class="cur" href="app.html">Importer</a>
+      <a href="library.html">Bibliothèque</a>
+    </div>
+    <span class="who" id="who"></span>
+    <button class="btn btn-sm" id="out" type="button">Déconnexion</button>
+  </div>
+</nav>
+
+<main class="shell band">
+  <p class="sec-tag"><span>[ 01 ]</span><i></i><span class="gt">&gt;</span><b>Importer</b></p>
+  <h1>Déposez vos PDF.<br>Ils deviennent du <em>Markdown</em>.</h1>
+  <p class="sub">
+    Vous pouvez en déposer plusieurs d'un coup, ils sont traités l'un après l'autre.
+    La conversion se fait dans votre navigateur : le PDF ne part jamais.
+    Seul le Markdown produit est enregistré dans votre espace.
+  </p>
+
+  <input id="file" type="file" accept=".pdf,application/pdf" multiple hidden>
+  <div class="drop" id="drop" role="button" tabindex="0" aria-controls="file"
+       aria-label="Choisir ou déposer des fichiers PDF">
+    <span class="drop-mark" aria-hidden="true">PDF</span>
+    <strong>Déposez vos PDF ici</strong>
+    <span>Documents à texte natif · jusqu'à 25 Mo par fichier</span>
+    <span class="pick" aria-hidden="true">Choisir des fichiers</span>
+  </div>
+
+  <p class="msg" id="msg" role="status" aria-live="polite"></p>
+
+  <div id="results" hidden>
+    <div class="stats" id="stats">
+      <div class="stat"><b id="s-tokens">—</b><span>Jetons au total</span></div>
+      <div class="stat"><b id="s-docs">—</b><span>Documents</span></div>
+      <div class="stat"><b id="s-pages">—</b><span>Pages</span></div>
+      <div class="stat"><b id="s-time">—</b><span>Temps de conversion</span></div>
+    </div>
+    <div class="rows" id="rows" style="margin-top:20px"></div>
+    <p class="note" id="foot"></p>
+  </div>
+</main>
+
+<footer><div class="shell"><p>Conversion locale · aucun PDF n'est transmis.</p></div></footer>
+
+<script src="./vendor/supabase/supabase.umd.js"></script>
+<script type="module">
+import { requireUser, signOut, saveDocument, humanError, nf, humanSize, MARK } from './assets/session.js';
+import { loadEngine, convert, MAX_BYTES } from './assets/converter.js';
+
+document.getElementById('brand').insertAdjacentHTML('afterbegin', MARK);
+
+const drop = document.getElementById('drop');
+const input = document.getElementById('file');
+const msg = document.getElementById('msg');
+const results = document.getElementById('results');
+const rows = document.getElementById('rows');
+const foot = document.getElementById('foot');
+
+const say = (t, tone) => { msg.textContent = t; if (tone) msg.dataset.tone = tone; else delete msg.dataset.tone; };
+
+const user = await requireUser();
+if (user) {
+  document.getElementById('who').textContent = user.email;
+  document.getElementById('out').addEventListener('click', signOut);
+
+  say('Chargement du moteur…');
+  try { await loadEngine(); say(''); }
+  catch { say('Le moteur d’analyse n’a pas pu être chargé. Rechargez la page.', 'err'); }
+}
+
+/* ── Entrée des fichiers ───────────────────────────────────────── */
+drop.addEventListener('click', () => input.click());
+drop.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+});
+['dragenter', 'dragover'].forEach((t) =>
+  drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach((t) => drop.addEventListener(t, () => drop.classList.remove('over')));
+drop.addEventListener('drop', (e) => { e.preventDefault(); run([...e.dataTransfer.files]); });
+input.addEventListener('change', () => run([...input.files]));
+
+/* ── Traitement, un fichier après l'autre ──────────────────────────
+   Séquentiel et non parallèle : tout décoder en même temps ferait
+   tomber l'onglet sur un lot un peu gros. */
+let totals = { tokens: 0, docs: 0, pages: 0, ms: 0 };
+
+async function run(files) {
+  const pdfs = files.filter((f) => f.type === 'application/pdf' || /\.pdf$/i.test(f.name));
+  if (!pdfs.length) { say('Aucun PDF dans la sélection.', 'err'); return; }
+
+  results.hidden = false;
+  const skipped = files.length - pdfs.length;
+
+  for (let i = 0; i < pdfs.length; i++) {
+    const f = pdfs[i];
+    say('Conversion ' + (i + 1) + ' sur ' + pdfs.length + ' · ' + f.name);
+
+    if (f.size > MAX_BYTES) {
+      addRow(f.name, { err: 'Trop lourd (' + humanSize(f.size) + '), la limite est 25 Mo.' });
+      continue;
+    }
+    try {
+      const r = await convert(f);
+      if (!r.markdown) {
+        addRow(f.name, { err: 'Aucun texte natif : ce PDF est probablement un scan.' });
+        continue;
+      }
+      await saveDocument(user.id, r);
+      totals.tokens += r.tokens; totals.docs += 1;
+      totals.pages += r.limit;   totals.ms += r.ms;
+      addRow(f.name, { r });
+      refresh();
+    } catch (err) {
+      addRow(f.name, { err: humanError(err) });
+    }
+  }
+
+  say(totals.docs + (totals.docs > 1 ? ' documents enregistrés.' : ' document enregistré.')
+      + (skipped ? ' ' + skipped + ' fichier(s) ignoré(s), format non pris en charge.' : ''), 'ok');
+  foot.innerHTML = 'Retrouvez-les dans votre <a href="library.html" style="color:var(--oxide)">bibliothèque</a>.';
+  input.value = '';
+}
+
+function refresh() {
+  document.getElementById('s-tokens').textContent = '≈ ' + nf(totals.tokens);
+  document.getElementById('s-docs').textContent = nf(totals.docs);
+  document.getElementById('s-pages').textContent = nf(totals.pages);
+  document.getElementById('s-time').textContent = (totals.ms / 1000).toFixed(1).replace('.', ',') + ' s';
+}
+
+function addRow(name, { r, err }) {
+  const el = document.createElement('div');
+  el.className = 'row';
+  const meta = err
+    ? '<span class="hot">' + esc(err) + '</span>'
+    : esc(r.type) + ' · ' + r.limit + (r.limit > 1 ? ' pages' : ' page')
+      + ' · ≈ ' + nf(r.tokens) + ' jetons · ' + r.ms + ' ms';
+  el.innerHTML =
+    '<div class="row-main"><div class="row-name">' + esc(name) + '</div>' +
+    '<div class="row-meta">' + meta + '</div></div>' +
+    '<div class="row-act"><span class="pill ' + (err ? 'pill-warn' : 'pill-ok') + '">' +
+    (err ? 'ignoré' : 'enregistré') + '</span></div>';
+  rows.appendChild(el);
+}
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+</script>
+</body>
+</html>
