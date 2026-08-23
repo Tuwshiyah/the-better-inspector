@@ -201,7 +201,8 @@ a{color:inherit}
   transition:color .16s,background .16s}
 .lang button:last-child{border-right:0}
 .lang button:hover{color:var(--ink);background:var(--bg-alt)}
-.lang button[aria-pressed=true]{color:var(--ink);background:var(--bg-alt);font-weight:500}
+/* la langue active reprend l'accent du titre (« Markdown propre ») */
+.lang button[aria-pressed=true]{color:var(--oxide);background:var(--oxide-soft);font-weight:500}
 @media(max-width:1000px){.navlinks a.opt{display:none}}
 @media(max-width:560px){.chip{display:none}.navlinks{display:none}.lang{margin-left:0}}
 /* la marque et le sélecteur doivent tenir sans troncature */
