@@ -148,7 +148,7 @@
   --line:#e4e6ea;
   --line-2:#eef0f2;
 
-  --oxide:#b4442e;                    /* l'accent : la rouille du cœur Rust */
+  --oxide:#b4442e;                    /* l'accent : rouille sur papier */
   --oxide-soft:rgba(180,68,46,.07);
   --oxide-line:rgba(180,68,46,.3);
   --live:#2f9e5f;
@@ -397,6 +397,8 @@ h1 em{font-style:normal;color:var(--oxide)}
 .metric:last-child{border-right:0}
 .metric span{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 .metric strong{font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.metric-sub{font-family:var(--mono);font-size:10.5px;color:var(--muted);
+  font-variant-numeric:tabular-nums;min-height:1em}
 .metric strong.hot{color:var(--oxide)}
 .md-out{margin:0;flex:1;min-height:0;height:clamp(300px,34vw,430px);overflow:auto;padding:16px;
   font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--ink-2);
@@ -549,10 +551,11 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
           <h1 data-i18n="hero.h1">Transforme un PDF en <em>Markdown propre</em></h1>
 
           <p class="lede" data-i18n="hero.lede">
-            <strong>The Better Inspector</strong> lit le document dans votre navigateur : fragments
-            positionnés, polices, ordonnées. Il en reconstruit l'ordre de lecture, les niveaux de
-            titre et la structure des tableaux, puis rend du Markdown, que vos assistants lisent
-            mieux, et pour bien moins de jetons qu'un PDF envoyé tel quel.
+            Si vous construisez des pipelines documentaires ou du RAG, vous connaissez le problème :
+            les tableaux se mélangent, les colonnes se chevauchent, et le contexte s'effondre avant
+            même d'atteindre le modèle. <strong>The Better Inspector</strong> nettoie le document à
+            la source, dans votre navigateur : ordre de lecture reconstruit, niveaux de titre,
+            tableaux préservés.
           </p>
           <div class="cta-row">
             <a class="btn btn-primary" href="#demo" data-i18n="hero.cta1"><s aria-hidden="true"></s>Déposer un PDF</a>
@@ -650,7 +653,7 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
               <div class="metric"><span data-i18n="demo.m1">Type de document</span><strong class="hot" id="m-type">—</strong></div>
               <div class="metric"><span>Pages</span><strong id="m-pages">—</strong></div>
               <div class="metric"><span data-i18n="demo.m3">Traitement</span><strong id="m-time">—</strong></div>
-              <div class="metric"><span data-i18n="demo.m4">Jetons estimés</span><strong class="hot" id="m-tokens">—</strong></div>
+              <div class="metric"><span data-i18n="demo.m4">Jetons estimés</span><strong class="hot" id="m-tokens">—</strong><small class="metric-sub" id="m-per-page"></small></div>
             </div>
             <pre class="md-out" id="out" data-empty="Le Markdown extrait s'affichera ici.
 
@@ -669,10 +672,10 @@ sont reconstruits à partir des positions du texte."></pre>
       <div class="intro">
         <h2 class="rv" data-i18n="tok.h2">Un PDF déposé tel quel,<br><em>votre modèle le paie cher</em>.</h2>
         <p class="rv" data-i18n="tok.sub">
-          Un assistant qui reçoit un PDF le rend page par page en image, ou en tire un texte brut
-          où les colonnes s'entrelacent et les en-têtes se répètent. Vous payez des jetons pour de
-          la mise en forme, et le modèle lit un document qu'il comprend mal. Convertir d'abord
-          règle les deux problèmes d'un coup.
+          Nourrir un modèle avec un PDF brut est un cauchemar : il le rend page par page en image,
+          ou en tire un texte où les colonnes s'entrelacent et les en-têtes se répètent. Vous payez
+          des jetons pour de la mise en forme, et le modèle lit un document qu'il comprend mal.
+          Nettoyer à la source règle les deux problèmes d'un coup.
         </p>
       </div>
 
@@ -702,9 +705,11 @@ sont reconstruits à partir des positions du texte."></pre>
       </div>
 
       <p class="vs-foot rv" data-i18n="tok.foot">
-        La <a href="#demo" style="color:var(--ink-2)">démonstration ci-dessus</a> affiche l'estimation
-        en jetons de votre propre document. Le compte retenu est l'approximation usuelle d'environ
-        quatre caractères par jeton, le découpage exact dépendant du modèle.
+        La <a href="#demo" style="color:var(--ink-2)">démonstration ci-dessus</a> affiche le coût en
+        jetons de votre propre document, et son coût par page. Un PDF envoyé tel quel est rendu page
+        par page en image, et une image coûte bien plus qu'une page de texte : le rapport exact
+        dépend de votre modèle, comparez avec vos propres tarifs. Le compte retenu est
+        l'approximation usuelle d'environ quatre caractères par jeton.
       </p>
     </div>
   </section>
@@ -910,7 +915,7 @@ sont reconstruits à partir des positions du texte."></pre>
  "hero.tag2": "Your files never leave the tab",
  "hero.epigraph": "// a PDF does not store sentences. it stores <b>Tj</b> operators,<br>\n            // text matrices <b>Tm</b> and <b>ToUnicode</b> CMaps.",
  "hero.h1": "Turn a PDF into <em>clean Markdown</em>",
- "hero.lede": "<strong>The Better Inspector</strong> reads the document inside your browser: positioned fragments, fonts, baselines. It rebuilds the reading order, the heading levels and the table structure, then emits Markdown, which your assistants read better, and for far fewer tokens than a PDF handed over as-is.",
+ "hero.lede": "If you build document pipelines or RAG, you know the problem: tables get scrambled, columns overlap, and the context collapses before it even reaches the model. <strong>The Better Inspector</strong> cleans the document at the source, inside your browser: reading order rebuilt, heading levels, tables preserved.",
  "hero.cta1": "<s aria-hidden=\"true\"></s>Drop a PDF",
  "hero.cta2": "Why it matters ↓",
  "hero.cta3": "What it will not do →",
@@ -945,7 +950,7 @@ sont reconstruits à partir des positions du texte."></pre>
  "demo.m3": "Processing",
  "demo.m4": "Estimated tokens",
  "tok.h2": "A PDF handed over as-is,<br><em>your model pays for it</em>.",
- "tok.sub": "An assistant handed a PDF renders it page by page as images, or pulls out raw text where columns interleave and headers repeat. You pay tokens for layout, and the model reads a document it barely understands. Converting first fixes both at once.",
+ "tok.sub": "Feeding a model a raw PDF is a nightmare: it renders it page by page as images, or pulls out text where columns interleave and headers repeat. You pay tokens for layout, and the model reads a document it barely understands. Cleaning at the source fixes both at once.",
  "tok.card1i": "// raw PDF → assistant",
  "tok.card1h": "What you send today",
  "tok.a1": "Every page rendered as an image, or raw text with no structure",
@@ -960,7 +965,7 @@ sont reconstruits à partir des positions du texte."></pre>
  "tok.b3": "Reading order rebuilt, hyphenated words rejoined",
  "tok.b4": "Lean output: every token you send carries content",
  "tok.b5": "Local conversion, in a few dozen milliseconds",
- "tok.foot": "The <a href=\"#demo\" style=\"color:var(--ink-2)\">demo above</a> shows the token estimate for your own document. The figure uses the common rule of thumb of roughly four characters per token, and the exact split depends on the model.",
+ "tok.foot": "The <a href=\"#demo\" style=\"color:var(--ink-2)\">demo above</a> shows the token cost of your own document, and its cost per page. A PDF handed over as-is gets rendered page by page as images, and an image costs far more than a page of text: the exact ratio depends on your model, so compare against your own pricing. The figure uses the common rule of thumb of roughly four characters per token.",
  "cap.h2": "Six functions, <em>and that is all</em>.",
  "cap.sub": "There is no model, no service, no dependency beyond the format reader. Six functions do the work, and each card is named after the one that runs it, inside this page.",
  "cap.1h": "Grouping by baseline",
@@ -1267,6 +1272,7 @@ const STR = {
     readErr:(m)=>'Ce PDF n’a pas pu être lu : '+m+'.',
     unknown:'format non reconnu',
     kb:' Ko', mb:' Mo', locale:'fr-FR', dec:',',
+    perPage:(n)=>n+' par page',
     copy:'Copier', copied:'Copié', denied:'Refusé', nothing:'Il n’y a encore rien à copier.',
     noText:'(Aucun texte natif à extraire, ce PDF est probablement une image scannée.)',
     empty:"Le Markdown extrait s'affichera ici.\n\nTitres, listes, tableaux et ordre de lecture\nsont reconstruits à partir des positions du texte.",
@@ -1285,6 +1291,7 @@ const STR = {
     readErr:(m)=>'This PDF could not be read: '+m+'.',
     unknown:'unrecognised format',
     kb:' KB', mb:' MB', locale:'en-US', dec:'.',
+    perPage:(n)=>n+' per page',
     copy:'Copy', copied:'Copied', denied:'Blocked', nothing:'Nothing to copy yet.',
     noText:'(No native text to extract, this PDF is most likely a scan.)',
     empty:'The extracted Markdown will appear here.\n\nHeadings, lists, tables and reading order\nare rebuilt from the positions of the text.',
@@ -1299,6 +1306,7 @@ const drop = el('drop'), input = el('file');
 const fmeta = el('fmeta'), fname = el('fname'), fsize = el('fsize'), fclear = el('fclear');
 const out = el('out'), mType = el('m-type'), mPages = el('m-pages'), mTime = el('m-time');
 const mTok = el('m-tokens');
+const mPer = el('m-per-page');
 
 let pdfjs = null;
 let last = null;                           // dernier résultat, réaffichable dans l'autre langue
@@ -1345,6 +1353,7 @@ function reset() {
   fmeta.classList.remove('on');
   out.textContent = '';
   mType.textContent = mPages.textContent = mTime.textContent = mTok.textContent = '—';
+  mPer.textContent = '';
   say('');
   if (pdfjs) setEngine('dot-ok', T().ready);
 }
@@ -1718,8 +1727,13 @@ function toMarkdown(page) {
 /* ── Affichage : dépend de la langue courante, donc rejouable ─── */
 // approximation usuelle : environ quatre caractères par jeton
 function renderTokens() {
-  mTok.textContent = last && last.chars
-    ? '≈ ' + Math.round(last.chars / 4).toLocaleString(T().locale) : '—';
+  if (!last || !last.chars) { mTok.textContent = '—'; mPer.textContent = ''; return; }
+  const total = Math.round(last.chars / 4);
+  mTok.textContent = '≈ ' + total.toLocaleString(T().locale);
+  // le coût par page : c'est lui qu'on compare au tarif d'image de son modèle
+  // sur un document d'une page, le coût par page répète le total : inutile
+  mPer.textContent = last.limit > 1
+    ? T().perPage(Math.round(total / last.limit).toLocaleString(T().locale)) : '';
 }
 function renderNote() {
   if (!last) return;
