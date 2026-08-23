@@ -54,11 +54,6 @@ python3 -m http.server 8000
 Aucune étape de construction, aucune dépendance à installer. `pdf.js` et les
 polices sont servis depuis `vendor/`, donc la conversion fonctionne hors ligne.
 
-## Déployer
-
-Site statique sans backend. Sur Cloudflare Pages : *Connect to Git*, aucune
-commande de construction, répertoire de sortie `/`.
-
 ## Structure
 
 ```
