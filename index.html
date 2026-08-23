@@ -9,7 +9,7 @@
 <meta property="og:title" content="The Better Inspector">
 <meta property="og:description" content="PDF → Markdown structuré, entièrement côté navigateur. Vos fichiers ne quittent jamais l'onglet.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f1216'/%3E%3Cpath d='M7 8h9v3H7zM7 14h12v3H7zM7 20h7v3H7z' fill='%23fff'/%3E%3Crect x='22' y='8' width='4' height='15' fill='%23b4442e'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Crect%20width%3D%2724%27%20height%3D%2724%27%20rx%3D%275%27%20fill%3D%27%230f1216%27%2F%3E%3Crect%20x%3D%274.5%27%20y%3D%273%27%20width%3D%275%27%20height%3D%274.8%27%20fill%3D%27%23b4442e%27%2F%3E%3Crect%20x%3D%274.5%27%20y%3D%2710.2%27%20width%3D%275.2%27%20height%3D%2710.9%27%20fill%3D%27%23fff%27%2F%3E%3Cpath%20fill%3D%27%23fff%27%20fill-rule%3D%27evenodd%27%20d%3D%27M9.5%206H14.8a3.7%203.7%200%200%201%200%207.4H15.5a3.95%203.95%200%200%201%200%207.9H9.5Z%20M14.45%207.95a1.75%201.75%200%201%200%200%203.5%201.75%201.75%200%200%200%200-3.5Z%20M15.15%2015.35a2.1%202.1%200%201%200%200%204.2%202.1%202.1%200%200%200%200-4.2Z%27%2F%3E%3C%2Fsvg%3E">
 
 <style>
 /* Polices servies depuis le site : aucune requête tierce.
@@ -184,6 +184,8 @@ a{color:inherit}
   backdrop-filter:blur(14px) saturate(1.5);border-bottom:1px solid var(--line)}
 .nav-in{display:flex;align-items:center;gap:14px;height:60px}
 .brand{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:auto;min-width:0}
+.mark{width:19px;height:19px;flex:none;color:var(--ink)}
+@media(max-width:440px){.mark{width:17px;height:17px}}
 .brand b{font-family:var(--mono);font-size:14.5px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
 .chip{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--muted);
   border:1px solid var(--line);border-radius:4px;padding:2px 5px;white-space:nowrap}
@@ -512,7 +514,14 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
 
 <nav class="nav">
   <div class="shell nav-in">
-    <a class="brand" href="#haut"><b>The Better Inspector</b><span class="chip">v1.0</span></a>
+    <a class="brand" href="#haut">
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="4.5" y="3" width="5" height="4.8" fill="var(--oxide)"/>
+        <rect x="4.5" y="10.2" width="5.2" height="10.9" fill="currentColor"/>
+        <path fill="currentColor" fill-rule="evenodd" d="M9.5 6H14.8a3.7 3.7 0 0 1 0 7.4H15.5a3.95 3.95 0 0 1 0 7.9H9.5Z M14.45 7.95a1.75 1.75 0 1 0 0 3.5 1.75 1.75 0 0 0 0-3.5Z M15.15 15.35a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2Z"/>
+      </svg>
+      <b>The Better Inspector</b><span class="chip">v1.0</span>
+    </a>
     <div class="navlinks">
       <a class="cur" href="#haut" data-i18n="nav.home">&lt;accueil&gt;</a>
       <a href="#demo" data-i18n="nav.demo">Démo</a>
