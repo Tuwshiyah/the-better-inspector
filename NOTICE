@@ -1,0 +1,19 @@
+The Better Inspector
+Copyright (c) 2026 Tuwshiyah
+
+Ce logiciel redistribue les composants suivants.
+
+---
+
+pdf.js — https://github.com/mozilla/pdf.js
+Copyright 2024 Mozilla Foundation
+Licence Apache-2.0. Texte complet : vendor/pdfjs/LICENSE
+Fichiers concernés : vendor/pdfjs/pdf.min.mjs, vendor/pdfjs/pdf.worker.min.mjs
+Aucune modification n'a été apportée à ces fichiers.
+
+---
+
+Archivo — https://fonts.google.com/specimen/Archivo
+IBM Plex Mono — https://github.com/IBM/plex
+SIL Open Font License 1.1
+Fichiers concernés : vendor/fonts/*.woff2
