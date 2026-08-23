@@ -1,0 +1,1768 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Better Inspector, convertir un PDF en Markdown dans votre navigateur</title>
+<meta name="description" content="Déposez un PDF, récupérez du Markdown structuré. Titres, listes, tableaux et ordre de lecture reconstruits, entièrement dans votre navigateur, sans installation et sans serveur.">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:title" content="The Better Inspector">
+<meta property="og:description" content="PDF → Markdown structuré, entièrement côté navigateur. Vos fichiers ne quittent jamais l'onglet.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f1216'/%3E%3Cpath d='M7 8h9v3H7zM7 14h12v3H7zM7 20h7v3H7z' fill='%23fff'/%3E%3Crect x='22' y='8' width='4' height='15' fill='%23b4442e'/%3E%3C/svg%3E">
+
+<style>
+/* Polices servies depuis le site : aucune requête tierce.
+   Archivo et IBM Plex Mono, SIL Open Font License. */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./vendor/fonts/Archivo-400-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./vendor/fonts/Archivo-400-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 500;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./vendor/fonts/Archivo-500-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 500;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./vendor/fonts/Archivo-500-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./vendor/fonts/Archivo-600-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./vendor/fonts/Archivo-600-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./vendor/fonts/Archivo-700-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./vendor/fonts/Archivo-700-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./vendor/fonts/IBMPlexMono-400-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./vendor/fonts/IBMPlexMono-400-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./vendor/fonts/IBMPlexMono-500-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./vendor/fonts/IBMPlexMono-500-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./vendor/fonts/IBMPlexMono-600-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./vendor/fonts/IBMPlexMono-600-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   Jetons — base claire « produit », vocabulaire mono « atelier »
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#ffffff;
+  --bg-alt:#f7f8f9;
+  --ink:#0f1216;
+  --ink-2:#3d444d;
+  --muted:#767e88;
+  --line:#e4e6ea;
+  --line-2:#eef0f2;
+
+  --oxide:#b4442e;                    /* l'accent : la rouille du cœur Rust */
+  --oxide-soft:rgba(180,68,46,.07);
+  --oxide-line:rgba(180,68,46,.3);
+  --live:#2f9e5f;
+
+  --dark:#111826;
+  --dark-2:#1a2333;
+  --dark-line:rgba(255,255,255,.1);
+  --dark-fg:#dfe3ea;
+  --dark-mut:rgba(223,227,234,.45);
+
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+
+  --r:8px;
+  --r-lg:12px;
+  --shell:1200px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+a{color:inherit}
+::selection{background:var(--oxide);color:#fff}
+:focus-visible{outline:2px solid var(--oxide);outline-offset:3px;border-radius:4px}
+.shell{width:min(100% - 2.5rem,var(--shell));margin-inline:auto}
+
+/* ── Navigation : rangée de pastilles mono ─────────────────────── */
+.nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.85);
+  backdrop-filter:blur(14px) saturate(1.5);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;gap:14px;height:60px}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:auto;min-width:0}
+.brand b{font-family:var(--mono);font-size:14.5px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--muted);
+  border:1px solid var(--line);border-radius:4px;padding:2px 5px;white-space:nowrap}
+.navlinks{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--bg)}
+.navlinks a{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;padding:8px 12px;border-right:1px solid var(--line);
+  white-space:nowrap;transition:color .16s,background .16s}
+.navlinks a:last-child{border-right:0}
+.navlinks a:hover{color:var(--ink);background:var(--bg-alt)}
+.navlinks a.cur{color:var(--ink);background:var(--bg-alt)}
+.lang{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  background:var(--bg);flex:none;margin-left:16px}
+.lang button{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);
+  background:none;border:0;border-right:1px solid var(--line);padding:8px 11px;cursor:pointer;
+  transition:color .16s,background .16s}
+.lang button:last-child{border-right:0}
+.lang button:hover{color:var(--ink);background:var(--bg-alt)}
+.lang button[aria-pressed=true]{color:var(--ink);background:var(--bg-alt);font-weight:500}
+.gh{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.06em;text-transform:uppercase;text-decoration:none;white-space:nowrap;
+  border:1px solid var(--ink);border-radius:var(--r);padding:9px 13px;background:var(--ink);color:#fff;
+  transition:background .16s,border-color .16s}
+.gh:hover{background:var(--oxide);border-color:var(--oxide)}
+@media(max-width:1000px){.navlinks a.opt{display:none}}
+@media(max-width:560px){.chip{display:none}.navlinks{display:none}.lang{margin-left:0}}
+/* la marque, le sélecteur et GitHub doivent tenir sans troncature */
+@media(max-width:440px){
+  .nav-in{gap:10px}
+  .brand b{font-size:12.5px}
+  .lang button{padding:8px 8px}
+  .gh{padding:8px 10px}
+}
+
+/* ── Boutons ───────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;
+  font-weight:500;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;
+  padding:13px 17px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--bg);color:var(--ink);transition:border-color .16s,background .16s,transform .16s}
+.btn:hover{border-color:var(--ink);transform:translateY(-1px)}
+.btn s{width:7px;height:7px;background:currentColor;flex:none;display:block}   /* le carré Aeye */
+.btn-primary{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn-primary:hover{background:var(--oxide);border-color:var(--oxide)}
+.btn-dark{background:transparent;border-color:var(--dark-line);color:var(--dark-fg)}
+.btn-dark:hover{border-color:var(--dark-fg)}
+.btn-light{background:#fff;border-color:#fff;color:var(--dark)}
+.btn-light:hover{background:var(--oxide);border-color:var(--oxide);color:#fff}
+
+/* ── Bandes de section ─────────────────────────────────────────── */
+.band{padding:clamp(58px,6.5vw,100px) 0;border-top:1px solid var(--line)}
+.band-alt{background:var(--bg-alt)}
+.sec-tag{display:flex;align-items:center;gap:12px;margin:0 0 clamp(20px,2.6vw,30px);
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sec-tag i{flex:0 0 clamp(24px,4vw,64px);height:1px;background:var(--line);display:block}
+.sec-tag .gt{color:var(--oxide)}
+.sec-tag b{color:var(--ink);font-weight:500}
+
+.intro{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:clamp(18px,4.5vw,72px);align-items:end;margin-bottom:clamp(30px,3.6vw,46px)}
+@media(max-width:880px){.intro{grid-template-columns:minmax(0,1fr);align-items:start;gap:14px}}
+h2{margin:0;font-size:clamp(28px,3.5vw,46px);font-weight:700;line-height:1.05;letter-spacing:-.034em;max-width:24ch}
+h2 em{font-style:normal;color:var(--oxide)}
+.intro p{margin:0;color:var(--ink-2);font-size:15.5px;line-height:1.62;max-width:56ch}
+.intro p a{color:var(--oxide);text-underline-offset:3px}
+.intro p code,.note code{font-family:var(--mono);font-size:13px;background:var(--bg);
+  border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+.band-alt .intro p code{background:#fff}
+
+/* ═══ HERO ══════════════════════════════════════════════════════ */
+.hero{position:relative;overflow:hidden;padding:clamp(48px,6vw,88px) 0 clamp(40px,5vw,64px)}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--line-2) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--line-2) 1px,transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(130% 88% at 18% 0%,#000 0%,transparent 70%);
+  mask-image:radial-gradient(130% 88% at 18% 0%,#000 0%,transparent 70%);
+}
+.hero>*{position:relative}
+
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:clamp(22px,3vw,34px)}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:5px 9px}
+.tag-hot{color:var(--oxide);border-color:var(--oxide-line);background:var(--oxide-soft)}
+.tag-code{text-transform:none;letter-spacing:.02em}
+
+/* l'épigraphe technique, en commentaire de code */
+.epigraph{margin:0 0 clamp(20px,2.6vw,30px);font-family:var(--mono);
+  font-size:clamp(11.5px,1vw,13px);line-height:1.85;color:var(--muted);max-width:70ch}
+.epigraph b{font-weight:400;color:var(--oxide)}
+
+h1{margin:0;font-size:clamp(31px,3.9vw,52px);font-weight:700;line-height:1.04;letter-spacing:-.038em;max-width:17ch}
+h1 em{font-style:normal;color:var(--oxide)}
+@keyframes blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+
+.hero-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,460px);
+  gap:0 clamp(28px,4vw,60px);align-items:start}
+.hero-head{grid-column:1;grid-row:1}
+.hero-body{grid-column:1;grid-row:2;display:flex;flex-direction:column;min-width:0}
+.hero .term{grid-column:2;grid-row:2}
+@media(max-width:940px){
+  .hero-cols{grid-template-columns:minmax(0,1fr)}
+  .hero-head,.hero-body,.hero .term{grid-column:1}
+  .hero-head{grid-row:1}.hero-body{grid-row:2}.hero .term{grid-row:3;margin-top:34px}
+}
+.lede{margin:clamp(16px,2vw,24px) 0 0;font-size:16.5px;line-height:1.62;color:var(--ink-2);max-width:52ch}
+.lede strong{color:var(--ink);font-weight:600}
+.cta-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}
+
+.stats{display:flex;flex-wrap:wrap;gap:clamp(22px,3.4vw,50px);margin-top:clamp(28px,3.4vw,40px);
+  padding-top:22px;border-top:1px solid var(--line)}
+.stat b{display:block;font-family:var(--mono);font-size:clamp(23px,2.5vw,31px);font-weight:600;
+  letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums}
+.stat:first-child b{color:var(--oxide)}
+.stat span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);margin-top:8px}
+
+/* ── Terminal ──────────────────────────────────────────────────── */
+.term{background:var(--dark);border-radius:var(--r-lg);color:var(--dark-fg);
+  font-family:var(--mono);overflow:hidden}
+.term-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--dark-line);
+  font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dark-mut)}
+.dots{display:flex;gap:5px}
+.dots i{width:8px;height:8px;border-radius:50%;background:rgba(223,227,234,.2)}
+.dots i:first-child{background:var(--oxide)}
+.term pre{margin:0;padding:16px 15px;overflow-x:auto;line-height:1.78;font-size:12.4px}
+.hero .term pre{min-height:calc(16.02em + 32px)}
+.tcur{display:inline-block;width:.58em;height:1.02em;background:var(--oxide);
+  vertical-align:-.16em;animation:blink 1.05s steps(1) infinite}
+.p1{color:var(--oxide)}
+.cmt{color:var(--dark-mut)}
+.md{color:#8fb8d8}
+.term-foot{display:grid;grid-template-columns:auto 1fr;gap:5px 16px;padding:12px 15px;
+  border-top:1px solid var(--dark-line);font-size:11px}
+.term-foot span{color:var(--dark-mut);letter-spacing:.06em;text-transform:uppercase}
+.term-foot strong{font-weight:500}
+.term-foot strong.hot{color:var(--oxide)}
+
+/* ── Fiche technique ───────────────────────────────────────────── */
+.specs{display:grid;grid-template-columns:repeat(4,1fr);margin-top:12px;
+  border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--bg)}
+@media(max-width:940px){.specs{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.specs{grid-template-columns:1fr}}
+.spec{padding:16px 18px 18px;border-right:1px solid var(--line)}
+.spec:last-child{border-right:0}
+@media(max-width:940px){
+  .spec:nth-child(2n){border-right:0}
+  .spec:nth-child(-n+2){border-bottom:1px solid var(--line)}
+}
+@media(max-width:560px){
+  .spec{border-right:0;border-bottom:1px solid var(--line)}
+  .spec:last-child{border-bottom:0}
+}
+.spec span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.spec b{display:block;font-family:var(--mono);font-size:12.5px;font-weight:400;line-height:1.75;color:var(--ink-2)}
+.spec b i{font-style:normal;color:var(--oxide)}
+
+/* ═══ DÉMO — l'élément signature ════════════════════════════════ */
+.demo{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.demo-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 15px;
+  border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.demo-engine{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2)}
+.demo-engine b{font-weight:500;color:var(--ink)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:none}
+.dot-ok{background:var(--live)}
+.dot-run{background:var(--oxide);animation:pulse 1s ease-in-out infinite}
+.dot-err{background:var(--oxide)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.demo-priv{margin-left:auto;display:inline-flex;align-items:center;gap:7px}
+
+.demo-grid{display:grid;grid-template-columns:minmax(0,430px) minmax(0,1fr)}
+@media(max-width:960px){.demo-grid{grid-template-columns:minmax(0,1fr)}}
+.demo-in{padding:20px;border-right:1px solid var(--line)}
+@media(max-width:960px){.demo-in{border-right:0;border-bottom:1px solid var(--line)}}
+
+.drop{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+  border:1px dashed var(--line);border-radius:var(--r);background:var(--bg-alt);
+  padding:clamp(34px,3.4vw,46px) 22px;cursor:pointer;transition:border-color .18s,background .18s}
+.drop:hover,.drop.over{border-color:var(--oxide);background:var(--oxide-soft)}
+.drop-mark{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--oxide);
+  border:1px solid var(--oxide-line);border-radius:4px;padding:4px 8px;margin-bottom:4px}
+.drop strong{font-size:15px;font-weight:600}
+.drop span{font-size:12.5px;color:var(--muted)}
+.drop .pick{margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;font-weight:500;border:1px solid var(--ink);border-radius:var(--r);
+  background:var(--ink);color:#fff;padding:9px 14px}
+
+.demo-file{display:none;align-items:baseline;gap:8px;margin-top:14px;font-family:var(--mono);
+  font-size:11.5px;padding:10px 11px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg-alt)}
+.demo-file.on{display:flex}
+.demo-file strong{flex:1 1 auto;min-width:0;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.demo-file span{flex:none;color:var(--muted)}
+.demo-file button{flex:none;font-family:var(--mono);font-size:11px;text-transform:uppercase;
+  letter-spacing:.06em;background:none;border:0;color:var(--oxide);cursor:pointer;padding:0}
+.demo-file button:hover{text-decoration:underline}
+.demo-msg{margin:12px 0 0;font-size:12.5px;line-height:1.5;color:var(--ink-2);min-height:1.5em}
+.demo-msg[data-tone=err]{color:var(--oxide)}
+.demo-msg[data-tone=ok]{color:var(--live)}
+.note{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line-2);
+  font-size:11.5px;line-height:1.6;color:var(--muted)}
+.note a{color:var(--ink-2)}
+
+.demo-out{display:flex;flex-direction:column;min-width:0}
+.demo-out-head{display:flex;align-items:center;gap:12px;padding:11px 15px;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.demo-copy{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;padding:6px 10px;border:1px solid var(--line);border-radius:6px;
+  background:var(--bg);color:var(--ink-2);cursor:pointer;transition:.16s}
+.demo-copy:hover{border-color:var(--ink);color:var(--ink)}
+.demo-copy[data-done=yes]{color:var(--oxide);border-color:var(--oxide-line)}
+.demo-metrics{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+@media(max-width:700px){.demo-metrics{grid-template-columns:repeat(2,1fr)}
+  .metric:nth-child(2n){border-right:0}.metric:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+.metric{padding:13px 15px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.metric:last-child{border-right:0}
+.metric span{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.metric strong{font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.metric strong.hot{color:var(--oxide)}
+.md-out{margin:0;flex:1;min-height:0;height:clamp(300px,34vw,430px);overflow:auto;padding:16px;
+  font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--ink-2);
+  white-space:pre-wrap;word-break:break-word;background:var(--bg)}
+.md-out:empty::before{content:attr(data-empty);color:var(--muted);white-space:pre-wrap}
+
+/* ── Capacités ─────────────────────────────────────────────────── */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:940px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.cards{grid-template-columns:1fr}}
+.card{position:relative;padding:22px 20px 24px;background:var(--bg);
+  border:1px solid var(--line);border-radius:var(--r-lg);transition:border-color .18s,transform .18s}
+.card:hover{border-color:var(--ink);transform:translateY(-2px)}
+.card .idx{position:absolute;top:19px;right:19px;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.card code{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;
+  color:var(--oxide);background:var(--oxide-soft);border:1px solid var(--oxide-line);
+  border-radius:4px;padding:3px 6px;margin-bottom:14px}
+.card h3{margin:0 0 7px;font-size:16px;font-weight:600;letter-spacing:-.015em}
+.card p{margin:0;font-size:13.6px;line-height:1.58;color:var(--ink-2)}
+
+/* ── Cartes en vis-à-vis (jetons, limites) ─────────────────────── */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:820px){.vs{grid-template-columns:1fr}}
+.vs-card{padding:24px 22px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg)}
+.vs-card.good{border-color:var(--oxide-line);background:var(--oxide-soft)}
+.vs-card i{display:block;font-style:normal;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.07em;color:var(--muted);margin-bottom:7px}
+.vs-card.good i{color:var(--oxide)}
+.vs-card h3{margin:0 0 18px;font-size:17.5px;font-weight:600;letter-spacing:-.02em}
+.vs-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+/* bloc, et non flex : le <b> d'introduction doit couler dans la phrase */
+.vs-list li{position:relative;padding-left:22px;font-size:13.8px;line-height:1.5;color:var(--ink-2)}
+.vs-list li::before{content:"\2715";position:absolute;left:0;top:1px;
+  font-family:var(--mono);font-size:11px;color:var(--muted)}
+.vs-card.good .vs-list li::before{content:"\2713";color:var(--oxide)}
+/* une coche devant un plafond induirait en erreur : on marque, on n'approuve pas */
+.vs-card.facts .vs-list li::before{content:"\2192";color:var(--oxide)}
+.vs-list li b{color:var(--ink);font-weight:600}
+.vs-foot{margin:16px 0 0;font-size:12.5px;line-height:1.6;color:var(--muted)}
+
+/* ── Architecture ──────────────────────────────────────────────── */
+.flow{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.flow-head{display:flex;justify-content:space-between;gap:12px;padding:12px 16px;
+  border-bottom:1px solid var(--line);font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.step{display:grid;grid-template-columns:104px minmax(0,1fr);gap:18px;align-items:center;
+  padding:17px 16px;border-bottom:1px solid var(--line-2)}
+.step:last-of-type{border-bottom:0}
+.step-n{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;color:var(--oxide);text-transform:uppercase}
+.step h3{margin:0 0 4px;font-size:15.5px;font-weight:600;letter-spacing:-.01em}
+.step p{margin:0;font-size:13.4px;color:var(--ink-2);line-height:1.5}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:660px){.split{grid-template-columns:1fr}.step{grid-template-columns:1fr;gap:8px}}
+.mini{border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;background:var(--bg-alt)}
+.mini strong{display:block;font-family:var(--mono);font-size:12.5px;font-weight:500;margin-bottom:2px}
+.mini span{font-size:12.5px;color:var(--ink-2)}
+.step-out{background:var(--bg-alt)}
+.step-out h3{color:var(--oxide);font-family:var(--mono);font-size:13.5px;letter-spacing:0}
+.flow-foot{padding:15px 16px;border-top:1px solid var(--line);font-size:13.4px;color:var(--ink-2)}
+.flow-foot code{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+
+/* ── Appel à l'action ──────────────────────────────────────────── */
+.cta{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:860px){.cta{grid-template-columns:1fr}}
+.cta-card{display:flex;flex-direction:column;background:var(--dark);border-radius:var(--r-lg);
+  padding:clamp(22px,2.6vw,30px);color:var(--dark-fg)}
+.cta-card h3{margin:0 0 8px;font-size:clamp(21px,2.2vw,27px);font-weight:700;letter-spacing:-.028em;color:#fff}
+.cta-card>p{margin:0 0 20px;font-size:14px;line-height:1.6;color:var(--dark-mut);max-width:44ch}
+.cta-term{background:var(--dark-2);border-radius:var(--r);padding:14px 15px;font-family:var(--mono);
+  font-size:12.4px;line-height:1.85;margin-bottom:auto;overflow-x:auto;white-space:pre}
+.cta-term .p1{color:var(--live)}
+.checks{list-style:none;margin:0 0 auto;padding:0;display:flex;flex-direction:column;gap:9px}
+.checks li{display:flex;align-items:baseline;gap:10px;font-size:13.6px;font-weight:500}
+.checks li::before{content:"✓";color:var(--live);font-family:var(--mono);font-size:12px;flex:none}
+.cta-row-dark{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}
+
+/* ── Pied ──────────────────────────────────────────────────────── */
+footer{border-top:1px solid var(--line);padding:36px 0 46px}
+.foot{display:flex;flex-wrap:wrap;gap:22px;align-items:baseline;justify-content:space-between}
+.foot p{margin:0;font-size:13px;color:var(--ink-2);max-width:52ch}
+.foot p b{color:var(--ink);font-weight:600}
+.foot nav{display:flex;flex-wrap:wrap;gap:16px}
+.foot nav a{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;transition:color .16s}
+.foot nav a:hover{color:var(--oxide)}
+
+/* ── Mouvement ─────────────────────────────────────────────────── */
+.js .rv{opacity:0;transform:translateY(12px)}
+.js .rv.in{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+@keyframes fade-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.js .tags{animation:fade-up .5s both}
+.js .epigraph{animation:fade-up .5s .12s both}
+.js h1{animation:fade-up .6s .26s both cubic-bezier(.22,1,.36,1)}
+.js .lede,.js .cta-row,.js .stats{animation:fade-up .6s .46s both}
+.js .hero .term{animation:fade-up .6s .52s both}
+.js .pkgs,.js .specs{animation:fade-up .6s .62s both}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js .rv,.js .rv.in{opacity:1;transform:none;transition:none}
+  .js .tags,.js .epigraph,.js h1,.js .lede,.js .cta-row,.js .stats,.js .hero .term,.js .pkgs,.js .specs{animation:none}
+  .dot-run,.tcur{animation:none}
+  .tcur{display:none}
+  .btn:hover,.card:hover,.pkg:hover{transform:none}
+  *{transition-duration:.01ms!important}
+}
+</style>
+</head>
+
+<body>
+
+<nav class="nav">
+  <div class="shell nav-in">
+    <a class="brand" href="#haut"><b>The Better Inspector</b><span class="chip">v1.0</span></a>
+    <div class="navlinks">
+      <a class="cur" href="#haut" data-i18n="nav.home">&lt;accueil&gt;</a>
+      <a href="#demo" data-i18n="nav.demo">Démo</a>
+      <a href="#jetons" data-i18n="nav.tokens">Jetons</a>
+      <a class="opt" href="#capacites" data-i18n="nav.caps">Capacités</a>
+      <a class="opt" href="#architecture" data-i18n="nav.chain">Chaîne</a>
+      <a href="#limites" data-i18n="nav.limits">Limites</a>
+    </div>
+    <div class="lang" role="group" aria-label="Langue / Language">
+      <button type="button" data-lang="fr" aria-pressed="true">FR</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="gh" href="https://github.com/Tuwshiyah/the-better-inspector">GitHub <span aria-hidden="true">↗</span></a>
+  </div>
+</nav>
+
+<main id="haut">
+
+  <!-- ══ HERO ══ -->
+  <header class="hero">
+    <div class="shell">
+      <div class="hero-cols">
+        <div class="hero-head">
+          <div class="tags">
+            <span class="tag tag-hot" data-i18n="hero.tag1">Sans installation · sans serveur</span>
+            <span class="tag" data-i18n="hero.tag2">Vos fichiers ne quittent pas l'onglet</span>
+            <span class="tag tag-code">pdf.js · Apache-2.0</span>
+          </div>
+
+          <p class="epigraph" data-i18n="hero.epigraph">
+            // un PDF ne stocke pas de phrases. il stocke des opérateurs <b>Tj</b>,<br>
+            // des matrices de texte <b>Tm</b> et des CMaps <b>ToUnicode</b>.
+          </p>
+        </div>
+
+        <div class="hero-body">
+          <h1 data-i18n="hero.h1">Transforme un PDF en <em>Markdown propre</em></h1>
+
+          <p class="lede" data-i18n="hero.lede">
+            <strong>The Better Inspector</strong> lit le document dans votre navigateur : fragments
+            positionnés, polices, ordonnées. Il en reconstruit l'ordre de lecture, les niveaux de
+            titre et la structure des tableaux, puis rend du Markdown, que vos assistants lisent
+            mieux, et pour bien moins de jetons qu'un PDF envoyé tel quel.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#demo" data-i18n="hero.cta1"><s aria-hidden="true"></s>Déposer un PDF</a>
+            <a class="btn" href="#jetons" data-i18n="hero.cta2">Pourquoi ça compte ↓</a>
+            <a class="btn" href="#limites" data-i18n="hero.cta3">Ce qu'il ne fait pas →</a>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><b>0</b><span data-i18n="hero.stat1">Octet envoyé sur le réseau</span></div>
+            <div class="stat"><b>4</b><span data-i18n="hero.stat2">Classes de document</span></div>
+            <div class="stat"><b data-i18n="hero.stat3v">25 Mo</b><span data-i18n="hero.stat3">Par document</span></div>
+          </div>
+        </div>
+
+        <div class="term">
+          <div class="term-head"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span data-i18n="hero.termhead">sortie markdown · exemple</span></div>
+<pre id="hero-term" data-i18n="hero.term"><span class="md"># Rapport annuel 2025</span>
+<span class="cmt">   rapport-annuel.pdf · 12 pages</span>
+
+<span class="md">## Chiffres clés</span>
+<span class="md">| Indicateur | 2025 | 2024 |</span>
+<span class="md">|---|---:|---:|</span>
+
+<span class="md">- Ouverture de trois bureaux</span>
+<span class="md">- Lancement de la plateforme</span></pre>
+          <div class="term-foot" id="term-foot" data-i18n="hero.termfoot">
+            <span>type de document</span><strong class="hot">Texte natif</strong>
+            <span>sortie</span><strong>Markdown structuré</strong>
+            <span>jetons estimés</span><strong>≈ 1 840</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="specs" data-i18n-attr="aria-label" data-i18n-a="spec.aria" aria-label="Caractéristiques techniques">
+        <div class="spec" data-i18n="spec.1"><span>Classes de document</span><b><i>Texte natif</i> · Scanné<br>Image · Mixte</b></div>
+        <div class="spec" data-i18n="spec.2"><span>Mise en page</span><b>colonnes détectées<br>ordre de lecture reconstruit</b></div>
+        <div class="spec" data-i18n="spec.3"><span>Structure</span><b>titres · listes · tableaux<br>césures recollées</b></div>
+        <div class="spec" data-i18n="spec.4"><span>Exécution</span><b>entièrement locale<br>aucun envoi réseau</b></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ [N.01/05] DÉMO ══ -->
+  <section class="band band-alt" id="demo">
+    <div class="shell">
+      <p class="sec-tag"><span>[N.01/05]</span><i></i><span class="gt">&gt;</span><b data-i18n="sec.demo">Démo navigateur</b></p>
+      <div class="intro">
+        <h2 class="rv" data-i18n="demo.h2">Déposez un PDF.<br>Repartez avec du <em>Markdown</em>.</h2>
+        <p class="rv" data-i18n="demo.sub">
+          Le fichier est décodé dans un worker : regroupement des fragments par ligne de base,
+          détection de la gouttière, remise en ordre des colonnes, classement des niveaux de titre,
+          puis émission Markdown. Aucun octet ne sort de l'onglet, il n'y a pas de serveur
+          derrière ce formulaire.
+        </p>
+      </div>
+
+      <div class="demo rv">
+        <div class="demo-bar">
+          <span class="demo-engine"><i class="dot" id="eng-dot" aria-hidden="true"></i><b data-i18n="demo.engine">Analyse locale</b><span id="eng-state">Chargement du moteur…</span></span>
+          <span class="demo-priv" data-i18n="demo.priv"><span aria-hidden="true">◇</span>Le PDF reste dans votre navigateur</span>
+        </div>
+
+        <div class="demo-grid">
+          <div class="demo-in">
+            <input id="file" type="file" accept=".pdf,application/pdf" hidden>
+            <div class="drop" id="drop" role="button" tabindex="0" aria-controls="file"
+                 data-i18n-attr="aria-label" data-i18n-a="demo.aria" aria-label="Choisir ou déposer un fichier PDF">
+              <span class="drop-mark" aria-hidden="true">PDF</span>
+              <strong data-i18n="demo.drop">Déposez un PDF ici</strong>
+              <span data-i18n="demo.dropsub">Documents à texte natif · jusqu'à 25 Mo</span>
+              <span class="pick" aria-hidden="true" data-i18n="demo.pick">Choisir un PDF</span>
+            </div>
+
+            <div class="demo-file" id="fmeta">
+              <strong id="fname"></strong>
+              <span id="fsize"></span>
+              <button id="fclear" type="button" data-i18n="demo.clear">Retirer</button>
+            </div>
+
+            <p class="demo-msg" id="msg" role="status" aria-live="polite"></p>
+
+            <p class="note" data-i18n="demo.note">
+              Tout se passe ici : le fichier est lu en mémoire, converti, puis oublié dès que vous
+              quittez la page. Aucun envoi, aucun compte, aucune trace côté serveur, puisqu'il n'y a pas
+              de serveur.
+            </p>
+          </div>
+
+          <div class="demo-out">
+            <div class="demo-out-head">
+              <span data-i18n="demo.outhead">Sortie Markdown</span>
+              <button class="demo-copy" id="copy" type="button" data-i18n="demo.copy">Copier</button>
+            </div>
+            <div class="demo-metrics">
+              <div class="metric"><span data-i18n="demo.m1">Type de document</span><strong class="hot" id="m-type">—</strong></div>
+              <div class="metric"><span>Pages</span><strong id="m-pages">—</strong></div>
+              <div class="metric"><span data-i18n="demo.m3">Traitement</span><strong id="m-time">—</strong></div>
+              <div class="metric"><span data-i18n="demo.m4">Jetons estimés</span><strong class="hot" id="m-tokens">—</strong></div>
+            </div>
+            <pre class="md-out" id="out" data-empty="Le Markdown extrait s'affichera ici.
+
+Titres, listes, tableaux et ordre de lecture
+sont reconstruits à partir des positions du texte."></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ [N.02/05] ÉCONOMIE DE JETONS ══ -->
+  <section class="band" id="jetons">
+    <div class="shell">
+      <p class="sec-tag"><span>[N.02/05]</span><i></i><span class="gt">&gt;</span><b data-i18n="sec.tokens">Économie de jetons</b></p>
+      <div class="intro">
+        <h2 class="rv" data-i18n="tok.h2">Un PDF déposé tel quel,<br><em>votre modèle le paie cher</em>.</h2>
+        <p class="rv" data-i18n="tok.sub">
+          Un assistant qui reçoit un PDF le rend page par page en image, ou en tire un texte brut
+          où les colonnes s'entrelacent et les en-têtes se répètent. Vous payez des jetons pour de
+          la mise en forme, et le modèle lit un document qu'il comprend mal. Convertir d'abord
+          règle les deux problèmes d'un coup.
+        </p>
+      </div>
+
+      <div class="vs rv">
+        <div class="vs-card">
+          <i data-i18n="tok.card1i">// PDF brut → assistant</i>
+          <h3 data-i18n="tok.card1h">Ce que vous envoyez aujourd'hui</h3>
+          <ul class="vs-list">
+            <li data-i18n="tok.a1">Chaque page rendue en image, ou un texte brut sans structure</li>
+            <li data-i18n="tok.a2">En-têtes, pieds de page et numéros répétés à chaque page</li>
+            <li data-i18n="tok.a3">Colonnes entrelacées : les phrases d'une page se mélangent</li>
+            <li data-i18n="tok.a4">Mots coupés en fin de ligne, tableaux aplatis en bouillie</li>
+            <li data-i18n="tok.a5">Le temps de rendu du document s'ajoute à celui de la réponse</li>
+          </ul>
+        </div>
+        <div class="vs-card good">
+          <i data-i18n="tok.card2i">// converti → assistant</i>
+          <h3 data-i18n="tok.card2h">Ce que vous pourriez envoyer</h3>
+          <ul class="vs-list">
+            <li data-i18n="tok.b1">Du texte, rien que du texte, aucune image à facturer</li>
+            <li data-i18n="tok.b2">Titres, listes et tableaux dans une syntaxe que le modèle connaît</li>
+            <li data-i18n="tok.b3">Ordre de lecture reconstruit, césures recollées</li>
+            <li data-i18n="tok.b4">Nettoyage économe : chaque jeton envoyé porte du contenu</li>
+            <li data-i18n="tok.b5">Conversion locale, en quelques dizaines de millisecondes</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="vs-foot rv" data-i18n="tok.foot">
+        La <a href="#demo" style="color:var(--ink-2)">démonstration ci-dessus</a> affiche l'estimation
+        en jetons de votre propre document. Le compte retenu est l'approximation usuelle d'environ
+        quatre caractères par jeton, le découpage exact dépendant du modèle.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ [N.03/05] CAPACITÉS ══ -->
+  <section class="band band-alt" id="capacites">
+    <div class="shell">
+      <p class="sec-tag"><span>[N.03/05]</span><i></i><span class="gt">&gt;</span><b data-i18n="sec.caps">Capacités</b></p>
+      <div class="intro">
+        <h2 class="rv" data-i18n="cap.h2">Six fonctions, <em>et c'est tout</em>.</h2>
+        <p class="rv" data-i18n="cap.sub">
+          Il n'y a pas de modèle, pas de service, pas de dépendance en dehors du lecteur de format.
+          Six fonctions font le travail, et chaque carte porte le nom de celle qui l'exécute dans
+          le fichier de cette page.
+        </p>
+      </div>
+      <div class="cards rv">
+        <article class="card">
+          <span class="idx">//001</span>
+          <code>clusterRows()</code>
+          <h3 data-i18n="cap.1h">Regroupement par ligne de base</h3>
+          <p data-i18n="cap.1p">Les fragments renvoyés par le moteur sont dispersés. Ils sont regroupés par ordonnée, avec une tolérance dérivée de la taille de corps médiane de la page.</p>
+        </article>
+        <article class="card">
+          <span class="idx">//002</span>
+          <code>findGutter()</code>
+          <h3 data-i18n="cap.2h">Détection de gouttière</h3>
+          <p data-i18n="cap.2p">La gouttière est l'abscisse centrale que le moins de rangées traversent d'un seul tenant, et qui court sur au moins 45 % de la hauteur, ce qui la distingue d'un simple écart entre colonnes d'un tableau.</p>
+        </article>
+        <article class="card">
+          <span class="idx">//003</span>
+          <code>orderLines()</code>
+          <h3 data-i18n="cap.3h">Ordre de lecture, bande par bande</h3>
+          <p data-i18n="cap.3p">Chaque rangée est scindée à la gouttière. Colonne de gauche puis colonne de droite ; une ligne pleine largeur (titre, résumé, figure) clôt la bande et sépare deux blocs à deux colonnes.</p>
+        </article>
+        <article class="card">
+          <span class="idx">//004</span>
+          <code>sizeLevels()</code>
+          <h3 data-i18n="cap.4h">Niveaux de titre</h3>
+          <p data-i18n="cap.4p">Les seuils absolus échouent : un article scientifique titre à 1,2× le corps, un rapport à 2×. On classe donc les tailles réellement présentes sur la page, plus une heuristique pour les intertitres numérotés ou en capitales.</p>
+        </article>
+        <article class="card">
+          <span class="idx">//005</span>
+          <code>segments()</code>
+          <h3 data-i18n="cap.5h">Reconnaissance de tableaux</h3>
+          <p data-i18n="cap.5p">Deux rangées consécutives dont les segments s'alignent à moins de dix points près forment un tableau. Il ressort en syntaxe pipe, en-tête compris.</p>
+        </article>
+        <article class="card">
+          <span class="idx">//006</span>
+          <code>classify()</code>
+          <h3 data-i18n="cap.6h">Classification du document</h3>
+          <p data-i18n="cap.6p">Densité de texte et opérateurs d'image par page donnent quatre classes : texte natif, scanné, image ou mixte. Le texte pivoté (tampons arXiv, filigranes de marge) est écarté avant tout traitement.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ [N.04/05] ARCHITECTURE ══ -->
+  <section class="band" id="architecture">
+    <div class="shell">
+      <p class="sec-tag"><span>[N.04/05]</span><i></i><span class="gt">&gt;</span><b data-i18n="sec.chain">Architecture</b></p>
+      <div class="intro">
+        <h2 class="rv" data-i18n="ch.h2">Six étapes,<br><em>aucune boîte noire.</em></h2>
+        <p class="rv" data-i18n="ch.sub">
+          Le document n'est lu qu'une fois. Chaque étape a un rôle étroit et porte le nom de la
+          fonction qui l'exécute dans le fichier de cette page, que vous pouvez lire.
+        </p>
+      </div>
+      <div class="flow rv">
+        <div class="flow-head"><span>toMarkdown()</span><span>&lt;script type="module"&gt;</span></div>
+        <div class="step">
+          <span class="step-n" data-i18n="ch.in">Entrée</span>
+          <div><h3 data-i18n="ch.inh">Le fichier déposé</h3><p data-i18n="ch.inp">Lu en mémoire par la page. Aucune requête réseau n'est émise à partir d'ici.</p></div>
+        </div>
+        <div class="step">
+          <span class="step-n" data-i18n="ch.s1">Étape 1</span>
+          <div class="split">
+            <div class="mini"><strong>readPage()</strong><span data-i18n="ch.m1">Fragments positionnés, polices, opérateurs d'image</span></div>
+            <div class="mini"><strong>classify()</strong><span data-i18n="ch.m2">Texte natif · scanné · image · mixte</span></div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-n" data-i18n="ch.s2">Étape 2</span>
+          <div class="split">
+            <div class="mini"><strong>clusterRows()</strong><span data-i18n="ch.m3">Fragments regroupés par ordonnée</span></div>
+            <div class="mini"><strong>findGutter()</strong><span data-i18n="ch.m4">Abscisse de séparation des colonnes</span></div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-n" data-i18n="ch.s3">Étape 3</span>
+          <div class="split">
+            <div class="mini"><strong>orderLines()</strong><span data-i18n="ch.m5">Rangées scindées, bandes ordonnées</span></div>
+            <div class="mini"><strong>sizeLevels()</strong><span data-i18n="ch.m6">Niveaux de titre présents sur la page</span></div>
+          </div>
+        </div>
+        <div class="step step-out">
+          <span class="step-n" data-i18n="ch.out">Sortie</span>
+          <div><h3 data-i18n="ch.outh">Markdown + estimation de jetons</h3><p data-i18n="ch.outp">Titres, listes, tableaux en syntaxe pipe, césures recollées. Le compte de jetons est calculé sur le résultat.</p></div>
+        </div>
+        <div class="flow-foot" data-i18n="ch.foot">
+          Tout se passe dans l'onglet. <code>pdf.js</code> décode le format dans un worker ; le reste
+          (regroupement, colonnes, titres, tableaux) est écrit à la main dans cette page.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ [N.05/05] LIMITES ══ -->
+  <section class="band band-alt" id="limites">
+    <div class="shell">
+      <p class="sec-tag"><span>[N.05/05]</span><i></i><span class="gt">&gt;</span><b data-i18n="sec.limits">Limites</b></p>
+      <div class="intro">
+        <h2 class="rv" data-i18n="lim.h2">Ce qu'il <em>ne fait pas</em>.</h2>
+        <p class="rv" data-i18n="lim.sub">
+          Un outil qui ne dit pas où il s'arrête vous le fait découvrir au mauvais moment. Voici les
+          bornes, toutes lisibles dans le code de cette page.
+        </p>
+      </div>
+      <div class="vs rv">
+        <div class="vs-card">
+          <i data-i18n="lim.c1i">// hors de portée</i>
+          <h3 data-i18n="lim.c1h">Ce que l'outil laisse passer</h3>
+          <ul class="vs-list">
+            <li data-i18n="lim.a1"><b>Pas d'OCR.</b> Un PDF scanné est détecté et signalé, mais pas converti, il n'y a aucun texte à extraire.</li>
+            <li data-i18n="lim.a2"><b>Ni formules ni figures.</b> Les mathématiques et les images ne sont pas transcrites ; seule la légende ressort, si elle est en texte.</li>
+            <li data-i18n="lim.a3"><b>Des heuristiques, pas un modèle.</b> Une mise en page très inhabituelle peut être mal découpée.</li>
+          </ul>
+        </div>
+        <div class="vs-card good facts">
+          <i data-i18n="lim.c2i">// bornes chiffrées</i>
+          <h3 data-i18n="lim.c2h">Les plafonds</h3>
+          <ul class="vs-list">
+            <li data-i18n="lim.b1"><b>40 pages.</b> Au-delà, seules les 40 premières sont traitées, et la démo vous le dit explicitement.</li>
+            <li data-i18n="lim.b2"><b>25 Mo.</b> Un fichier plus lourd est refusé avec sa taille réelle affichée.</li>
+            <li data-i18n="lim.b3"><b>~4 caractères par jeton.</b> L'estimation est une approximation ; le découpage exact dépend du modèle.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ APPEL À L'ACTION ══ -->
+  <section class="band">
+    <div class="shell">
+      <div class="cta">
+        <div class="cta-card rv">
+          <h3 data-i18n="cta.h1">Essayez tout de suite</h3>
+          <p data-i18n="cta.p1">Rien à installer, rien à configurer, aucun compte. Déposez un document, le Markdown apparaît.</p>
+          <div class="cta-term" data-i18n="cta.term1">
+<span class="p1">→</span> déposez un PDF à texte natif
+<span class="p1">→</span> copiez le Markdown</div>
+          <div class="cta-row-dark">
+            <a class="btn btn-light" href="#demo" data-i18n="cta.b1"><s aria-hidden="true"></s>Ouvrir la démo</a>
+            <a class="btn btn-dark" href="#jetons" data-i18n="cta.b2">L'argument des jetons</a>
+          </div>
+        </div>
+        <div class="cta-card rv">
+          <h3 data-i18n="cta.h2">Regardez sous le capot</h3>
+          <p data-i18n="cta.p2">Le convertisseur tient dans le fichier de cette page. Aucune minification, aucun paquet : le code que vous lisez est celui qui tourne.</p>
+          <ul class="checks">
+            <li data-i18n="cta.l1">Un seul fichier HTML, lisible tel quel</li>
+            <li data-i18n="cta.l2">Aucun appel réseau pendant la conversion</li>
+            <li data-i18n="cta.l3">pdf.js pour la lecture, le reste est écrit à la main</li>
+            <li data-i18n="cta.l4">Licence MIT</li>
+          </ul>
+          <div class="cta-row-dark">
+            <a class="btn btn-light" href="https://github.com/Tuwshiyah/the-better-inspector" data-i18n="cta.b3"><s aria-hidden="true"></s>Voir le code</a>
+            <a class="btn btn-dark" href="#architecture" data-i18n="cta.b4">La chaîne, étape par étape</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="shell">
+    <div class="foot">
+      <p data-i18n="foot.p"><b>The Better Inspector</b>, convertisseur PDF vers Markdown fonctionnant
+         entièrement dans le navigateur. © 2026 Tuwshiyah, sous licence MIT.</p>
+      <nav>
+        <a href="https://github.com/Tuwshiyah/the-better-inspector">GitHub</a>
+        <a href="#demo" data-i18n="foot.demo">Démo</a>
+        <a href="#limites" data-i18n="foot.limits">Limites</a>
+        <a href="./vendor/pdfjs/LICENSE" data-i18n="foot.lic">Licence pdf.js</a>
+        <a href="#haut" data-i18n="foot.top">Haut de page ↑</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<script type="application/json" id="i18n">
+{
+ "nav.home": "&lt;home&gt;",
+ "nav.demo": "Demo",
+ "nav.tokens": "Tokens",
+ "nav.caps": "Internals",
+ "nav.chain": "Pipeline",
+ "nav.limits": "Limits",
+ "hero.tag1": "No install · no server",
+ "hero.tag2": "Your files never leave the tab",
+ "hero.epigraph": "// a PDF does not store sentences. it stores <b>Tj</b> operators,<br>\n            // text matrices <b>Tm</b> and <b>ToUnicode</b> CMaps.",
+ "hero.h1": "Turn a PDF into <em>clean Markdown</em>",
+ "hero.lede": "<strong>The Better Inspector</strong> reads the document inside your browser: positioned fragments, fonts, baselines. It rebuilds the reading order, the heading levels and the table structure, then emits Markdown, which your assistants read better, and for far fewer tokens than a PDF handed over as-is.",
+ "hero.cta1": "<s aria-hidden=\"true\"></s>Drop a PDF",
+ "hero.cta2": "Why it matters ↓",
+ "hero.cta3": "What it will not do →",
+ "hero.stat1": "Bytes sent over the network",
+ "hero.stat2": "Document classes",
+ "hero.stat3v": "25 MB",
+ "hero.stat3": "Per document",
+ "hero.termhead": "markdown output · sample",
+ "hero.term": "<span class=\"md\"># Annual report 2025</span>\n<span class=\"cmt\">   annual-report.pdf · 12 pages</span>\n\n<span class=\"md\">## Key figures</span>\n<span class=\"md\">| Metric | 2025 | 2024 |</span>\n<span class=\"md\">|---|---:|---:|</span>\n\n<span class=\"md\">- Three new offices opened</span>\n<span class=\"md\">- Self-serve platform shipped</span>",
+ "hero.termfoot": "<span>document type</span><strong class=\"hot\">Native text</strong>\n            <span>output</span><strong>Structured Markdown</strong>\n            <span>estimated tokens</span><strong>≈ 1,840</strong>",
+ "spec.1": "<span>Document classes</span><b><i>Native text</i> · Scanned<br>Image · Mixed</b>",
+ "spec.2": "<span>Layout</span><b>columns detected<br>reading order rebuilt</b>",
+ "spec.3": "<span>Structure</span><b>headings · lists · tables<br>hyphenation rejoined</b>",
+ "spec.4": "<span>Execution</span><b>fully local<br>no network calls</b>",
+ "sec.demo": "Browser demo",
+ "sec.tokens": "Token economy",
+ "sec.caps": "Internals",
+ "sec.chain": "Pipeline",
+ "sec.limits": "Limits",
+ "demo.h2": "Drop a PDF.<br>Walk away with <em>Markdown</em>.",
+ "demo.sub": "The file is decoded in a worker: fragments grouped by baseline, gutter detected, columns put back in order, heading levels ranked, then Markdown emitted. Not a byte leaves the tab, because there is no server behind this form.",
+ "demo.engine": "Local parsing",
+ "demo.priv": "<span aria-hidden=\"true\">◇</span>The PDF stays in your browser",
+ "demo.drop": "Drop a PDF here",
+ "demo.dropsub": "Native-text documents · up to 25 MB",
+ "demo.pick": "Choose a PDF",
+ "demo.clear": "Remove",
+ "demo.note": "Everything happens here: the file is read into memory, converted, then forgotten the moment you leave the page. No upload, no account, no server-side trace, because there is no server.",
+ "demo.outhead": "Markdown output",
+ "demo.copy": "Copy",
+ "demo.m1": "Document type",
+ "demo.m3": "Processing",
+ "demo.m4": "Estimated tokens",
+ "tok.h2": "A PDF handed over as-is,<br><em>your model pays for it</em>.",
+ "tok.sub": "An assistant handed a PDF renders it page by page as images, or pulls out raw text where columns interleave and headers repeat. You pay tokens for layout, and the model reads a document it barely understands. Converting first fixes both at once.",
+ "tok.card1i": "// raw PDF → assistant",
+ "tok.card1h": "What you send today",
+ "tok.a1": "Every page rendered as an image, or raw text with no structure",
+ "tok.a2": "Headers, footers and page numbers repeated on every page",
+ "tok.a3": "Interleaved columns: sentences from a page get shuffled together",
+ "tok.a4": "Words split at line ends, tables flattened into mush",
+ "tok.a5": "Rendering time is added on top of the answer time",
+ "tok.card2i": "// converted → assistant",
+ "tok.card2h": "What you could send",
+ "tok.b1": "Text, nothing but text, no image to bill",
+ "tok.b2": "Headings, lists and tables in a syntax the model already knows",
+ "tok.b3": "Reading order rebuilt, hyphenated words rejoined",
+ "tok.b4": "Lean output: every token you send carries content",
+ "tok.b5": "Local conversion, in a few dozen milliseconds",
+ "tok.foot": "The <a href=\"#demo\" style=\"color:var(--ink-2)\">demo above</a> shows the token estimate for your own document. The figure uses the common rule of thumb of roughly four characters per token, and the exact split depends on the model.",
+ "cap.h2": "Six functions, <em>and that is all</em>.",
+ "cap.sub": "There is no model, no service, no dependency beyond the format reader. Six functions do the work, and each card is named after the one that runs it, inside this page.",
+ "cap.1h": "Grouping by baseline",
+ "cap.1p": "The fragments the engine returns are scattered. They are grouped by vertical position, with a tolerance derived from the median body size of the page.",
+ "cap.2h": "Gutter detection",
+ "cap.2p": "The gutter is the central x-position that the fewest rows cross uninterrupted, and that runs across at least 45% of the height, which is what tells it apart from a mere gap between table columns.",
+ "cap.3h": "Reading order, band by band",
+ "cap.3p": "Each row is split at the gutter. Left column then right column; a full-width line (title, abstract, figure) closes the band and separates two two-column blocks.",
+ "cap.4h": "Heading levels",
+ "cap.4p": "Absolute thresholds fail: a scientific paper titles at 1.2× body size, a report at 2×. So the sizes actually present on the page are ranked, plus a heuristic for numbered or all-caps section headings.",
+ "cap.5h": "Table recognition",
+ "cap.5p": "Two consecutive rows whose segments line up within ten points form a table. It comes out as pipe syntax, header included.",
+ "cap.6h": "Document classification",
+ "cap.6p": "Text density and image operators per page give four classes: native text, scanned, image or mixed. Rotated text (arXiv stamps, margin watermarks) is discarded before anything else.",
+ "ch.h2": "Six steps,<br><em>no black box.</em>",
+ "ch.sub": "The document is read once. Each step has a narrow job and is named after the function that runs it, inside this page, which you can read.",
+ "ch.in": "Input",
+ "ch.s1": "Step 1",
+ "ch.s2": "Step 2",
+ "ch.s3": "Step 3",
+ "ch.out": "Output",
+ "ch.inh": "The dropped file",
+ "ch.inp": "Read into memory by the page. No network request is issued from here on.",
+ "ch.m1": "Positioned fragments, fonts, image operators",
+ "ch.m2": "Native text · scanned · image · mixed",
+ "ch.m3": "Fragments grouped by vertical position",
+ "ch.m4": "Column separation x-position",
+ "ch.m5": "Rows split, bands ordered",
+ "ch.m6": "Heading levels present on the page",
+ "ch.outh": "Markdown + token estimate",
+ "ch.outp": "Headings, lists, tables in pipe syntax, hyphenation rejoined. The token count is computed on the result.",
+ "ch.foot": "Everything happens in the tab. <code>pdf.js</code> decodes the format in a worker; the rest (grouping, columns, headings, tables) is written by hand in this page.",
+ "lim.h2": "What it <em>will not do</em>.",
+ "lim.sub": "A tool that hides where it stops makes you find out at the worst moment. Here are the bounds, all readable in the code of this page.",
+ "lim.c1i": "// out of scope",
+ "lim.c1h": "What the tool lets through",
+ "lim.a1": "<b>No OCR.</b> A scanned PDF is detected and flagged, but not converted, because there is no text to extract.",
+ "lim.a2": "<b>No formulas, no figures.</b> Maths and images are not transcribed; only the caption comes out, and only if it is text.",
+ "lim.a3": "<b>Heuristics, not a model.</b> A very unusual layout can be split the wrong way.",
+ "lim.c2i": "// hard numbers",
+ "lim.c2h": "The ceilings",
+ "lim.b1": "<b>40 pages.</b> Beyond that, only the first 40 are processed, and the demo says so explicitly.",
+ "lim.b2": "<b>25 MB.</b> A heavier file is rejected, with its actual size shown.",
+ "lim.b3": "<b>~4 characters per token.</b> The estimate is an approximation; the exact split depends on the model.",
+ "cta.h1": "Try it right now",
+ "cta.p1": "Nothing to install, nothing to configure, no account. Drop a document, the Markdown appears.",
+ "cta.term1": "<span class=\"p1\">→</span> drop a native-text PDF\n<span class=\"p1\">→</span> copy the Markdown",
+ "cta.b1": "<s aria-hidden=\"true\"></s>Open the demo",
+ "cta.b2": "The token argument",
+ "cta.h2": "Look under the hood",
+ "cta.p2": "The converter fits inside this page. No minification, no bundle: the code you read is the code that runs.",
+ "cta.l1": "A single HTML file, readable as-is",
+ "cta.l2": "No network call during conversion",
+ "cta.l3": "pdf.js for reading, the rest written by hand",
+ "cta.l4": "MIT licence",
+ "cta.b3": "<s aria-hidden=\"true\"></s>Read the code",
+ "cta.b4": "The pipeline, step by step",
+ "foot.p": "<b>The Better Inspector</b>, a PDF-to-Markdown converter running entirely in the browser. © 2026 Tuwshiyah, MIT licence.",
+ "foot.demo": "Demo",
+ "foot.limits": "Limits",
+ "foot.lic": "pdf.js licence",
+ "foot.top": "Back to top ↑",
+ "_title": "The Better Inspector, turn a PDF into Markdown in your browser",
+ "_desc": "Drop a PDF, get structured Markdown back. Headings, lists, tables and reading order rebuilt, entirely in your browser, with no install and no server.",
+ "_ogt": "The Better Inspector",
+ "_ogd": "PDF → structured Markdown, fully client-side. Your files never leave the tab.",
+ "spec.aria": "Technical specifications",
+ "demo.aria": "Choose or drop a PDF file"
+}
+</script>
+
+<script>
+/* ── Bascule FR / EN ────────────────────────────────────────────
+   Le français est la source, écrite dans le HTML. L'anglais vit dans
+   le bloc JSON ci-dessus. On mémorise le français au chargement pour
+   pouvoir revenir en arrière sans recharger la page. */
+(function () {
+  var dict = {};
+  try { dict = JSON.parse(document.getElementById('i18n').textContent); } catch (_) { return; }
+
+  var src = new Map();
+  document.querySelectorAll('[data-i18n]').forEach(function (el) { src.set(el, el.innerHTML); });
+
+  // libellés d'accessibilité : traduits par attribut, pas par contenu
+  var attrs = new Map();
+  document.querySelectorAll('[data-i18n-attr]').forEach(function (el) {
+    attrs.set(el, el.getAttribute(el.getAttribute('data-i18n-attr')));
+  });
+
+  var meta = {
+    desc: document.querySelector('meta[name=description]'),
+    ogt: document.querySelector('meta[property="og:title"]'),
+    ogd: document.querySelector('meta[property="og:description"]')
+  };
+  var frMeta = { title: document.title, desc: meta.desc.content, ogt: meta.ogt.content, ogd: meta.ogd.content };
+  var btns = [].slice.call(document.querySelectorAll('.lang button'));
+
+  function apply(lang) {
+    var en = lang === 'en';
+    src.forEach(function (frHtml, el) {
+      var k = el.getAttribute('data-i18n');
+      el.innerHTML = (en && dict[k]) ? dict[k] : frHtml;
+    });
+    attrs.forEach(function (frVal, el) {
+      var a = el.getAttribute('data-i18n-attr'), k = el.getAttribute('data-i18n-a');
+      el.setAttribute(a, (en && dict[k]) ? dict[k] : frVal);
+    });
+    document.documentElement.lang = lang;
+    document.title = en ? dict._title : frMeta.title;
+    meta.desc.content = en ? dict._desc : frMeta.desc;
+    meta.ogt.content = en ? dict._ogt : frMeta.ogt;
+    meta.ogd.content = en ? dict._ogd : frMeta.ogd;
+    btns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
+    try { localStorage.setItem('tbi-lang', lang); } catch (_) {}
+    window.dispatchEvent(new CustomEvent('langchange', { detail: lang }));
+  }
+
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () { apply(b.dataset.lang); });
+  });
+
+  var saved = null;
+  try { saved = localStorage.getItem('tbi-lang'); } catch (_) {}
+  apply(saved || (/^fr\b/i.test(navigator.language || '') ? 'fr' : 'en'));
+})();
+</script>
+
+<script>
+document.documentElement.classList.add('js');
+
+/* ── Révélations au défilement ──────────────────────────────── */
+(function () {
+  var items = document.querySelectorAll('.rv');
+  if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    items.forEach(function (el) { el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en, i) {
+      if (!en.isIntersecting) return;
+      en.target.style.transitionDelay = Math.min(i * 60, 180) + 'ms';
+      en.target.classList.add('in');
+      io.unobserve(en.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: .08 });
+  items.forEach(function (el) { io.observe(el); });
+})();
+
+/* ── Terminal du hero : la session se rejoue en boucle ──────────
+   Au changement de langue, le moteur i18n réécrit le <pre> et le pied :
+   les références DOM d'avant deviennent orphelines. On incrémente donc
+   une génération pour faire sortir la boucle en cours, puis on relance. */
+(function () {
+  var pre = document.getElementById('hero-term');
+  if (!pre) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var SEQ = {
+    fr: [
+      { out: '# Rapport annuel 2025', cls: 'md' },
+      { out: '   rapport-annuel.pdf · 12 pages', cls: 'cmt' },
+      { gap: true },
+      { out: '## Chiffres clés', cls: 'md' },
+      { out: '| Indicateur | 2025 | 2024 |', cls: 'md' },
+      { out: '|---|---:|---:|', cls: 'md' },
+      { gap: true },
+      { out: '- Ouverture de trois bureaux', cls: 'md' },
+      { out: '- Lancement de la plateforme', cls: 'md' }
+    ],
+    en: [
+      { out: '# Annual report 2025', cls: 'md' },
+      { out: '   annual-report.pdf · 12 pages', cls: 'cmt' },
+      { gap: true },
+      { out: '## Key figures', cls: 'md' },
+      { out: '| Metric | 2025 | 2024 |', cls: 'md' },
+      { out: '|---|---:|---:|', cls: 'md' },
+      { gap: true },
+      { out: '- Three new offices opened', cls: 'md' },
+      { out: '- Self-serve platform shipped', cls: 'md' }
+    ]
+  };
+
+  var cursor = document.createElement('i');
+  cursor.className = 'tcur';
+  var visible = true, gen = 0;
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (e) { visible = e[0].isIntersecting; },
+      { threshold: .12 }).observe(pre);
+  }
+
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function idle() { return visible ? Promise.resolve() : wait(400).then(idle); }
+
+  function put(cls, text) {
+    var el = document.createElement('span');
+    if (cls) el.className = cls;
+    el.textContent = text;
+    pre.insertBefore(el, cursor);
+    return el;
+  }
+  function newline() { pre.insertBefore(document.createTextNode('\n'), cursor); }
+
+  function type(text, cls, speed, myGen) {
+    var el = put(cls, ''), i = 0;
+    return new Promise(function (done) {
+      (function step() {
+        if (myGen !== gen) return done();
+        el.textContent = text.slice(0, ++i);
+        if (i >= text.length) return done();
+        setTimeout(step, speed + Math.random() * speed);
+      })();
+    });
+  }
+
+  async function play(myGen) {
+    var foot = document.getElementById('term-foot');
+    var vals = foot ? [].slice.call(foot.querySelectorAll('strong')) : [];
+    var finals = vals.map(function (el) { return el.textContent; });
+
+    while (myGen === gen) {
+      await idle();
+      if (myGen !== gen) return;
+
+      pre.textContent = '';
+      pre.appendChild(cursor);
+      vals.forEach(function (el) { el.textContent = '—'; el.style.opacity = '.35'; });
+      await wait(650);
+
+      var seq = SEQ[document.documentElement.lang === 'en' ? 'en' : 'fr'];
+      for (var i = 0; i < seq.length && myGen === gen; i++) {
+        var st = seq[i];
+        if (i) newline();
+        if (st.gap) continue;
+        if (st.cls === 'cmt') { put(st.cls, st.out); await wait(320); }
+        else { await type(st.out, st.cls, 15, myGen); await wait(180); }
+      }
+      if (myGen !== gen) return;
+
+      await wait(400);
+      vals.forEach(function (el, k) { el.textContent = finals[k]; el.style.opacity = ''; });
+      await wait(3200);
+    }
+  }
+
+  addEventListener('langchange', function () { gen++; play(gen); });
+  play(gen);
+})();
+
+/* ── Lien de navigation actif ───────────────────────────────── */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  var links = [].slice.call(document.querySelectorAll('.navlinks a[href^="#"]'));
+  var home = links[0];
+  var map = {}, targets = [];
+  links.slice(1).forEach(function (a) {          // #haut couvre toute la page : on l'exclut
+    var el = document.getElementById(a.getAttribute('href').slice(1));
+    if (el) { map[el.id] = a; targets.push(el); }
+  });
+  if (!targets.length) return;
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      links.forEach(function (a) { a.classList.remove('cur'); });
+      map[en.target.id].classList.add('cur');
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  targets.forEach(function (t) { io.observe(t); });
+
+  // revenu tout en haut : c'est « accueil » qui reprend la main
+  addEventListener('scroll', function () {
+    if (scrollY < 120) {
+      links.forEach(function (a) { a.classList.remove('cur'); });
+      home.classList.add('cur');
+    }
+  }, { passive: true });
+})();
+</script>
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════════════
+   PDF → Markdown, entièrement dans le navigateur.
+   Classification, ordre de lecture, titres, listes et tableaux,
+   reconstruits ici au-dessus de pdf.js.
+   ═══════════════════════════════════════════════════════════════ */
+// pdf.js est servi depuis le site : aucune requête vers un tiers, et la
+// conversion continue de fonctionner hors ligne. Licence dans vendor/pdfjs/LICENSE.
+const PDFJS = './vendor/pdfjs/';
+const MAX_BYTES = 25 * 1024 * 1024;
+const MAX_PAGES = 40;
+
+const STR = {
+  fr: {
+    loading:'Chargement du moteur…', ready:'Prêt', parsing:'Analyse…', done:'Terminé',
+    failed:'Échec', noEngine:'Moteur indisponible',
+    engineErr:"Le moteur d'analyse n'a pas pu être chargé, vérifiez votre connexion, puis rechargez la page.",
+    notPdf:'Ce fichier n’est pas un PDF. Choisissez un document .pdf.',
+    tooBig:(sz)=>'Ce fichier fait '+sz+'. La démonstration s’arrête à 25 Mo.',
+    reading:'Lecture du document…',
+    page:(n,m)=>'Analyse de la page '+n+' sur '+m+'…',
+    parsed:(f)=>f+' analysé localement.',
+    truncated:(k,t)=>' Seules les '+k+' premières pages sur '+t+' ont été traitées.',
+    readErr:(m)=>'Ce PDF n’a pas pu être lu : '+m+'.',
+    unknown:'format non reconnu',
+    kb:' Ko', mb:' Mo', locale:'fr-FR', dec:',',
+    copy:'Copier', copied:'Copié', denied:'Refusé', nothing:'Il n’y a encore rien à copier.',
+    noText:'(Aucun texte natif à extraire, ce PDF est probablement une image scannée.)',
+    empty:"Le Markdown extrait s'affichera ici.\n\nTitres, listes, tableaux et ordre de lecture\nsont reconstruits à partir des positions du texte.",
+    cls:{native:'Texte natif', scanned:'Scanné', image:'Image', mixed:'Mixte'}
+  },
+  en: {
+    loading:'Loading engine…', ready:'Ready', parsing:'Parsing…', done:'Done',
+    failed:'Failed', noEngine:'Engine unavailable',
+    engineErr:'The parsing engine could not be loaded, check your connection, then reload the page.',
+    notPdf:'That file is not a PDF. Pick a .pdf document.',
+    tooBig:(sz)=>'That file is '+sz+'. The demo stops at 25 MB.',
+    reading:'Reading document…',
+    page:(n,m)=>'Parsing page '+n+' of '+m+'…',
+    parsed:(f)=>f+' parsed locally.',
+    truncated:(k,t)=>' Only the first '+k+' pages out of '+t+' were processed.',
+    readErr:(m)=>'This PDF could not be read: '+m+'.',
+    unknown:'unrecognised format',
+    kb:' KB', mb:' MB', locale:'en-US', dec:'.',
+    copy:'Copy', copied:'Copied', denied:'Blocked', nothing:'Nothing to copy yet.',
+    noText:'(No native text to extract, this PDF is most likely a scan.)',
+    empty:'The extracted Markdown will appear here.\n\nHeadings, lists, tables and reading order\nare rebuilt from the positions of the text.',
+    cls:{native:'Native text', scanned:'Scanned', image:'Image', mixed:'Mixed'}
+  }
+};
+const T = () => STR[document.documentElement.lang === 'en' ? 'en' : 'fr'];
+
+const el = (id) => document.getElementById(id);
+const dot = el('eng-dot'), state = el('eng-state'), msg = el('msg');
+const drop = el('drop'), input = el('file');
+const fmeta = el('fmeta'), fname = el('fname'), fsize = el('fsize'), fclear = el('fclear');
+const out = el('out'), mType = el('m-type'), mPages = el('m-pages'), mTime = el('m-time');
+const mTok = el('m-tokens');
+
+let pdfjs = null;
+let last = null;                           // dernier résultat, réaffichable dans l'autre langue
+
+function setEngine(cls, text) {
+  dot.className = 'dot ' + cls;
+  state.textContent = text;
+}
+function say(text, tone) {
+  msg.textContent = text;
+  if (tone) msg.dataset.tone = tone; else delete msg.dataset.tone;
+}
+
+try {
+  pdfjs = await import(PDFJS + 'pdf.min.mjs');
+  pdfjs.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.mjs';
+  setEngine('dot-ok', T().ready);
+} catch (_) {
+  setEngine('dot-err', T().noEngine);
+  say(T().engineErr, 'err');
+  drop.setAttribute('aria-disabled', 'true');
+}
+
+/* ── Entrée du fichier ─────────────────────────────────────── */
+drop.addEventListener('click', () => input.click());
+drop.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+});
+['dragenter', 'dragover'].forEach((t) =>
+  drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach((t) =>
+  drop.addEventListener(t, () => drop.classList.remove('over')));
+drop.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) handle(f);
+});
+input.addEventListener('change', () => { if (input.files[0]) handle(input.files[0]); });
+fclear.addEventListener('click', reset);
+
+function reset() {
+  input.value = '';
+  last = null;
+  fmeta.classList.remove('on');
+  out.textContent = '';
+  mType.textContent = mPages.textContent = mTime.textContent = mTok.textContent = '—';
+  say('');
+  if (pdfjs) setEngine('dot-ok', T().ready);
+}
+
+function humanSize(n) {
+  return n < 1024 * 1024
+    ? (n / 1024).toFixed(1).replace('.', T().dec) + T().kb
+    : (n / 1024 / 1024).toFixed(1).replace('.', T().dec) + T().mb;
+}
+
+async function handle(file) {
+  if (!pdfjs) return;
+  if (file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) {
+    say(T().notPdf, 'err');
+    return;
+  }
+  if (file.size > MAX_BYTES) {
+    say(T().tooBig(humanSize(file.size)), 'err');
+    return;
+  }
+
+  fname.textContent = file.name;
+  fsize.textContent = humanSize(file.size);
+  fmeta.classList.add('on');
+  setEngine('dot-run', T().parsing);
+  say(T().reading);
+  out.textContent = '';
+
+  try {
+    const t0 = performance.now();
+    const buf = await file.arrayBuffer();
+    const doc = await pdfjs.getDocument({ data: buf, isEvalSupported: false }).promise;
+    const total = doc.numPages;
+    const limit = Math.min(total, MAX_PAGES);
+
+    const pages = [];
+    for (let n = 1; n <= limit; n++) {
+      pages.push(await readPage(doc, n));
+      if (n % 4 === 0) say(T().page(n, limit));
+    }
+
+    const type = classify(pages);
+    const markdown = pages.map((p) => toMarkdown(p)).filter(Boolean).join('\n\n');
+    const ms = Math.round(performance.now() - t0);
+
+    last = { name: file.name, bytes: file.size, chars: markdown.length,
+             type: type, limit: limit, total: total };
+    mType.textContent = T().cls[type];
+    mPages.textContent = limit < total ? limit + ' / ' + total : String(total);
+    mTime.textContent = ms + ' ms';
+    renderTokens();
+    out.textContent = markdown || T().noText;
+
+    setEngine('dot-ok', T().done);
+    renderNote();
+  } catch (err) {
+    setEngine('dot-err', T().failed);
+    say(T().readErr(err && err.message ? err.message : T().unknown), 'err');
+  }
+}
+
+/* ── Lecture d'une page : texte positionné + présence d'images ── */
+async function readPage(doc, n) {
+  const page = await doc.getPage(n);
+  const content = await page.getTextContent();
+  const view = page.getViewport({ scale: 1 });
+
+  const items = content.items
+    .filter((i) => i.str && i.str.trim() !== '')
+    // on écarte le texte pivoté (tampons arXiv, filigranes de marge) :
+    // il partage les mêmes ordonnées que le corps et le contaminerait.
+    .filter((i) => Math.abs(i.transform[1]) <= Math.abs(i.transform[0]) * 0.2)
+    .map((i) => ({
+      str: i.str,
+      x: i.transform[4],
+      y: i.transform[5],
+      w: i.width,
+      h: Math.abs(i.transform[3]) || i.height || 10,
+      bold: /bold|black|heavy|semibold/i.test(i.fontName || '')
+    }));
+
+  let images = 0;
+  if (n <= 5) {
+    try {
+      const ops = await page.getOperatorList();
+      const IMG = [pdfjs.OPS.paintImageXObject, pdfjs.OPS.paintJpegXObject, pdfjs.OPS.paintInlineImageXObject];
+      images = ops.fnArray.filter((f) => IMG.indexOf(f) !== -1).length;
+    } catch (_) { /* la détection d'images est optionnelle */ }
+  }
+
+  page.cleanup();
+  return { items, images, width: view.width, height: view.height };
+}
+
+/* ── Classification, à l'image de detector.rs ─────────────────── */
+function classify(pages) {
+  let text = 0, image = 0;
+  pages.forEach((p) => {
+    const chars = p.items.reduce((a, i) => a + i.str.trim().length, 0);
+    if (chars >= 120) text++;
+    else if (p.images > 0) image++;
+  });
+  if (text === pages.length) return 'native';
+  if (text === 0 && image > 0) return 'scanned';
+  if (text === 0) return 'image';
+  return 'mixed';
+}
+
+/* ── Ordre de lecture : lignes, puis colonnes ─────────────────── */
+function median(list) {
+  if (!list.length) return 0;
+  const s = list.slice().sort((a, b) => a - b);
+  return s[Math.floor(s.length / 2)];
+}
+
+/* Étape 1 : regrouper les fragments par ordonnée. À ce stade une « ligne »
+   peut encore chevaucher deux colonnes : c'est l'étape suivante qui tranche. */
+function clusterRows(items) {
+  const body = median(items.map((i) => i.h)) || 10;
+  const tol = Math.max(2, body * 0.5);
+  const sorted = items.slice().sort((a, b) => b.y - a.y || a.x - b.x);
+
+  const rows = [];
+  let cur = null;
+  sorted.forEach((it) => {
+    if (!cur || Math.abs(cur.y - it.y) > tol) { cur = { y: it.y, parts: [it] }; rows.push(cur); }
+    else cur.parts.push(it);
+  });
+  rows.forEach((r) => r.parts.sort((a, b) => a.x - b.x));
+  return rows;
+}
+
+function makeLine(parts, y) {
+  const h = Math.max(...parts.map((p) => p.h));
+  let text = '', prev = null;
+  parts.forEach((p) => {
+    if (prev && p.x - (prev.x + prev.w) > h * 0.18 && !/\s$/.test(text)) text += ' ';
+    text += p.str;
+    prev = p;
+  });
+  return {
+    y, x: parts[0].x,
+    right: Math.max(...parts.map((p) => p.x + p.w)),
+    h, parts,
+    bold: parts.every((p) => p.bold),
+    text: text.replace(/\s+/g, ' ').trim()
+  };
+}
+
+/* L'indice après lequel une rangée peut être coupée sans casser un mot :
+   il faut un blanc franc de part et d'autre de la gouttière. */
+function splitAt(parts, cut) {
+  for (let i = parts.length - 2; i >= 0; i--) {
+    if (parts[i].x + parts[i].w <= cut && parts[i + 1].x >= cut) return i;
+  }
+  return -1;
+}
+
+/* La gouttière est l'abscisse centrale que le moins de rangées traversent
+   d'un seul tenant. Titre, résumé et figures pleine largeur la traversent :
+   ils resteront pleine largeur et sépareront les bandes à deux colonnes. */
+function findGutter(rows, width, height) {
+  if (rows.length < 12) return null;
+  let best = null;
+  for (let f = 0.35; f <= 0.65; f += 0.01) {
+    const cut = width * f;
+    let cross = 0, two = 0, top = -Infinity, bottom = Infinity;
+    rows.forEach((r) => {
+      const right = Math.max.apply(null, r.parts.map((p) => p.x + p.w));
+      if (right <= cut || r.parts[0].x >= cut) return;
+      if (splitAt(r.parts, cut) >= 0) {
+        two++;
+        if (r.y > top) top = r.y;
+        if (r.y < bottom) bottom = r.y;
+      } else cross++;
+    });
+    if (two < 6 || two < rows.length * 0.3) continue;   // sans rangées doubles, pas de colonnes
+    if (cross > rows.length * 0.3) continue;            // trop de texte pleine largeur
+    // Un écart entre colonnes d'un tableau ressemble à une gouttière, mais ne
+    // court que sur quelques lignes : une vraie gouttière traverse la page.
+    if ((top - bottom) < height * 0.45) continue;
+    if (!best || cross < best.cross || (cross === best.cross && two > best.two)) {
+      best = { cut, cross, two };
+    }
+  }
+  return best ? best.cut : null;
+}
+
+/* Ordre de lecture : dans chaque bande, la colonne de gauche puis celle de droite. */
+function orderLines(rows, width, height) {
+  const cut = findGutter(rows, width, height);
+  const lines = [];
+  if (cut === null) {
+    rows.forEach((r) => lines.push(makeLine(r.parts, r.y)));
+    return lines.filter((l) => l.text);
+  }
+
+  let left = [], right = [];
+  const flush = () => {
+    lines.push.apply(lines, left);
+    lines.push.apply(lines, right);
+    left = []; right = [];
+  };
+
+  rows.forEach((r) => {
+    const parts = r.parts;
+    const edge = Math.max.apply(null, parts.map((p) => p.x + p.w));
+    if (edge <= cut) { left.push(makeLine(parts, r.y)); return; }
+    if (parts[0].x >= cut) { right.push(makeLine(parts, r.y)); return; }
+    const i = splitAt(parts, cut);
+    if (i >= 0) {
+      left.push(makeLine(parts.slice(0, i + 1), r.y));
+      right.push(makeLine(parts.slice(i + 1), r.y));
+    } else {
+      flush();                                   // rangée pleine largeur : elle clôt la bande
+      lines.push(makeLine(parts, r.y));
+    }
+  });
+  flush();
+  return lines.filter((l) => l.text);
+}
+
+/* ── Reconnaissance de tableaux, à l'image de tables/ ─────────── */
+function segments(line) {
+  const gap = line.h * 1.2;
+  const segs = [];
+  let cur = null;
+  line.parts.forEach((p) => {
+    if (!cur || p.x - (cur.right) > gap) {
+      cur = { x: p.x, right: p.x + p.w, text: p.str };
+      segs.push(cur);
+    } else {
+      if (p.x - cur.right > line.h * 0.18) cur.text += ' ';
+      cur.text += p.str;
+      cur.right = p.x + p.w;
+    }
+  });
+  return segs.map((s) => ({ x: s.x, text: s.text.replace(/\s+/g, ' ').trim() })).filter((s) => s.text);
+}
+
+function alignedRows(a, b) {
+  if (a.length !== b.length || a.length < 3) return false;
+  for (let i = 0; i < a.length; i++) if (Math.abs(a[i].x - b[i].x) > 10) return false;
+  return true;
+}
+
+function renderTable(rows) {
+  const cell = (t) => t.replace(/\|/g, '\\|');
+  const head = rows[0].map((c) => cell(c.text));
+  const lines = ['| ' + head.join(' | ') + ' |', '|' + head.map(() => '---').join('|') + '|'];
+  rows.slice(1).forEach((r) => lines.push('| ' + r.map((c) => cell(c.text)).join(' | ') + ' |'));
+  return lines.join('\n');
+}
+
+/* ── Titres ───────────────────────────────────────────────────────
+   Les ratios absolus ne marchent pas : un article scientifique titre
+   à 1,2× le corps, un rapport à 2×. On classe donc les tailles
+   réellement présentes sur la page, du plus grand au plus petit. */
+function sizeLevels(lines, body) {
+  const counts = new Map();
+  lines.forEach((l) => {
+    const k = Math.round(l.h * 2) / 2;
+    counts.set(k, (counts.get(k) || 0) + 1);
+  });
+  return Array.from(counts.keys())
+    .filter((k) => k >= body * 1.12 && counts.get(k) <= lines.length * 0.3)
+    .sort((a, b) => b - a)
+    .slice(0, 3);
+}
+
+/* Beaucoup d'intertitres ont la taille du corps : ils se signalent
+   par une numérotation, des capitales ou une graisse, et par leur brièveté. */
+function looksLikeSection(line) {
+  const t = line.text;
+  if (t.length > 90 || t.length < 2) return false;
+  if (/[,;:]$/.test(t)) return false;
+  if (/[=%±×→]/.test(t)) return false;                 // une ligne de données n'est pas un titre
+  // « 3.1 Résultats » est un intertitre ; « 0.12 ± 0.03% ... » ne l'est pas :
+  // le numéro doit être suivi d'un mot commençant par une majuscule.
+  const numbered = /^((\d{1,2}(\.\d{1,2}){0,2})|[IVXLCDM]{1,6})[.)]?\s+[A-ZÀ-Ý][\wà-ÿ]/.test(t)
+                   && t.split(/\s+/).length <= 12;
+  const caps = /[A-ZÀ-Ý]{3}/.test(t) && !/[a-zà-ÿ]{2}/.test(t);
+  if (numbered && (line.bold || caps || t.length < 60)) return true;
+  if (caps && t.length < 60) return true;
+  return line.bold && t.length < 70 && !/\.$/.test(t);
+}
+
+/* ── Conversion ───────────────────────────────────────────────── */
+function toMarkdown(page) {
+  if (!page.items.length) return '';
+  const flow = orderLines(clusterRows(page.items), page.width, page.height);
+  if (!flow.length) return '';
+  const body = median(flow.map((l) => l.h)) || 10;
+  const levels = sizeLevels(flow, body);
+
+  const blocks = [];
+  let para = [];
+  let table = null;
+  let prevY = null;
+
+  const flushPara = () => {
+    if (!para.length) return;
+    blocks.push(para.join(' ').replace(/-\s(?=[a-zà-ÿ])/g, ''));
+    para = [];
+  };
+  const flushTable = () => {
+    if (table && table.length >= 2) blocks.push(renderTable(table));
+    else if (table) para.push(table[0].map((c) => c.text).join(' '));
+    table = null;
+  };
+
+  for (let i = 0; i < flow.length; i++) {
+    const l = flow[i];
+    const next = flow[i + 1];
+    const segs = segments(l);
+
+    // Tableau : au moins deux lignes consécutives aux colonnes alignées.
+    if (segs.length >= 3 && next && alignedRows(segs, segments(next))) {
+      flushPara();
+      table = table || [];
+      table.push(segs);
+      prevY = l.y;
+      continue;
+    }
+    if (table) {
+      if (segs.length >= 3 && alignedRows(segs, table[table.length - 1])) {
+        table.push(segs);
+        prevY = l.y;
+        continue;
+      }
+      flushTable();
+    }
+
+    const gap = prevY === null ? 0 : prevY - l.y;
+    const rank = levels.indexOf(Math.round(l.h * 2) / 2);
+    const isHead = (rank >= 0 && l.text.length < 160) ? rank + 1
+                 : looksLikeSection(l) ? 3 : 0;
+    const bullet = /^([•·▪●◦▸○–—-])\s+/.exec(l.text);
+    const numbered = /^(\d{1,2})[.)]\s+/.exec(l.text);
+
+    if (isHead) {
+      flushPara();
+      blocks.push('#'.repeat(isHead) + ' ' + l.text.replace(/\s*[.:]$/, ''));
+    } else if (bullet) {
+      flushPara();
+      blocks.push('- ' + l.text.slice(bullet[0].length));
+    } else if (numbered) {
+      flushPara();
+      blocks.push(numbered[1] + '. ' + l.text.slice(numbered[0].length));
+    } else {
+      // un saut vers le haut signale un changement de colonne : on clôt le paragraphe
+      if (para.length && (gap > body * 1.9 || gap < -body)) flushPara();
+      // césure en fin de ligne : on recolle le mot
+      if (para.length && /[a-zà-ÿ]-$/.test(para[para.length - 1])) {
+        para[para.length - 1] = para[para.length - 1].slice(0, -1) + l.text;
+      } else {
+        para.push(l.text);
+      }
+    }
+    prevY = l.y;
+  }
+  flushTable();
+  flushPara();
+
+  // les puces consécutives forment une seule liste, sans ligne vide entre elles
+  const isItem = (s) => /^(-|\d{1,2}\.)\s/.test(s);
+  return blocks.reduce((acc, b, i) =>
+    acc + (i === 0 ? '' : (isItem(b) && isItem(blocks[i - 1]) ? '\n' : '\n\n')) + b, '');
+}
+
+/* ── Affichage : dépend de la langue courante, donc rejouable ─── */
+// approximation usuelle : environ quatre caractères par jeton
+function renderTokens() {
+  mTok.textContent = last && last.chars
+    ? '≈ ' + Math.round(last.chars / 4).toLocaleString(T().locale) : '—';
+}
+function renderNote() {
+  if (!last) return;
+  let note = T().parsed(last.name);
+  if (last.limit < last.total) note += T().truncated(MAX_PAGES, last.total);
+  say(note, 'ok');
+}
+
+/* ── Changement de langue : on retraduit ce que le module a produit ── */
+addEventListener('langchange', () => {
+  out.dataset.empty = T().empty;
+  const btn = el('copy');
+  if (!btn.dataset.done) btn.textContent = T().copy;
+  if (!pdfjs) { setEngine('dot-err', T().noEngine); say(T().engineErr, 'err'); return; }
+  if (!last) { setEngine('dot-ok', T().ready); return; }
+  mType.textContent = T().cls[last.type];
+  fsize.textContent = humanSize(last.bytes);
+  renderTokens();
+  renderNote();
+  setEngine('dot-ok', T().done);
+});
+out.dataset.empty = T().empty;
+
+/* ── Copie ───────────────────────────────────────────────────── */
+el('copy').addEventListener('click', function () {
+  const btn = this;
+  if (!out.textContent) { say(T().nothing); return; }
+  navigator.clipboard.writeText(out.textContent).then(
+    () => {
+      btn.textContent = T().copied;
+      btn.dataset.done = 'yes';
+      setTimeout(() => { btn.textContent = T().copy; delete btn.dataset.done; }, 2000);
+    },
+    () => { btn.textContent = T().denied; setTimeout(() => { btn.textContent = T().copy; }, 2000); }
+  );
+});
+</script>
+
+</body>
+</html>
