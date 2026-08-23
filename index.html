@@ -285,6 +285,13 @@ h1 em{font-style:normal;color:var(--oxide)}
 }
 .lede{margin:clamp(16px,2vw,24px) 0 0;font-size:16.5px;line-height:1.62;color:var(--ink-2);max-width:52ch}
 .lede strong{color:var(--ink);font-weight:600}
+.gains{list-style:none;margin:clamp(16px,2vw,22px) 0 0;padding:0;
+  display:flex;flex-direction:column;gap:12px;max-width:54ch}
+.gains li{position:relative;padding-left:20px;font-size:14.5px;line-height:1.55;color:var(--ink-2)}
+.gains li::before{content:"\2193";position:absolute;left:0;top:0;
+  font-family:var(--mono);font-size:12px;color:var(--oxide)}
+.gains li:last-child::before{content:"\229E"}
+.gains li b{color:var(--ink);font-weight:600}
 .cta-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}
 
 .stats{display:flex;flex-wrap:wrap;gap:clamp(22px,3.4vw,50px);margin-top:clamp(28px,3.4vw,40px);
@@ -554,9 +561,16 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
             Si vous construisez des pipelines documentaires ou du RAG, vous connaissez le problème :
             les tableaux se mélangent, les colonnes se chevauchent, et le contexte s'effondre avant
             même d'atteindre le modèle. <strong>The Better Inspector</strong> nettoie le document à
-            la source, dans votre navigateur : ordre de lecture reconstruit, niveaux de titre,
-            tableaux préservés.
+            la source, dans votre navigateur.
           </p>
+          <ul class="gains">
+            <li data-i18n="hero.gain1"><b>Moins de jetons à payer.</b> Un PDF déposé tel quel est
+              rendu page par page en image, et une image coûte bien plus qu'une page de texte. Ici,
+              votre modèle ne reçoit que du Markdown : chaque jeton envoyé porte du contenu.</li>
+            <li data-i18n="hero.gain2"><b>Fenêtre de contexte préservée.</b> Moins de jetons par
+              document, c'est plus de fichiers et plus de conversation dans la même fenêtre, sans
+              passer à un modèle supérieur.</li>
+          </ul>
           <div class="cta-row">
             <a class="btn btn-primary" href="#demo" data-i18n="hero.cta1"><s aria-hidden="true"></s>Déposer un PDF</a>
             <a class="btn" href="#jetons" data-i18n="hero.cta2">Pourquoi ça compte ↓</a>
@@ -915,7 +929,7 @@ sont reconstruits à partir des positions du texte."></pre>
  "hero.tag2": "Your files never leave the tab",
  "hero.epigraph": "// a PDF does not store sentences. it stores <b>Tj</b> operators,<br>\n            // text matrices <b>Tm</b> and <b>ToUnicode</b> CMaps.",
  "hero.h1": "Turn a PDF into <em>clean Markdown</em>",
- "hero.lede": "If you build document pipelines or RAG, you know the problem: tables get scrambled, columns overlap, and the context collapses before it even reaches the model. <strong>The Better Inspector</strong> cleans the document at the source, inside your browser: reading order rebuilt, heading levels, tables preserved.",
+ "hero.lede": "If you build document pipelines or RAG, you know the problem: tables get scrambled, columns overlap, and the context collapses before it even reaches the model. <strong>The Better Inspector</strong> cleans the document at the source, inside your browser.",
  "hero.cta1": "<s aria-hidden=\"true\"></s>Drop a PDF",
  "hero.cta2": "Why it matters ↓",
  "hero.cta3": "What it will not do →",
@@ -1033,7 +1047,9 @@ sont reconstruits à partir des positions du texte."></pre>
  "_ogt": "The Better Inspector",
  "_ogd": "PDF → structured Markdown, fully client-side. Your files never leave the tab.",
  "spec.aria": "Technical specifications",
- "demo.aria": "Choose or drop a PDF file"
+ "demo.aria": "Choose or drop a PDF file",
+ "hero.gain1": "<b>Fewer tokens to pay for.</b> A PDF handed over as-is gets rendered page by page as images, and an image costs far more than a page of text. Here your model receives nothing but Markdown: every token you send carries content.",
+ "hero.gain2": "<b>Context window preserved.</b> Fewer tokens per document means more files and more conversation in the same window, without moving up to a bigger model."
 }
 </script>
 
