@@ -202,19 +202,13 @@ a{color:inherit}
 .lang button:last-child{border-right:0}
 .lang button:hover{color:var(--ink);background:var(--bg-alt)}
 .lang button[aria-pressed=true]{color:var(--ink);background:var(--bg-alt);font-weight:500}
-.gh{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;
-  letter-spacing:.06em;text-transform:uppercase;text-decoration:none;white-space:nowrap;
-  border:1px solid var(--ink);border-radius:var(--r);padding:9px 13px;background:var(--ink);color:#fff;
-  transition:background .16s,border-color .16s}
-.gh:hover{background:var(--oxide);border-color:var(--oxide)}
 @media(max-width:1000px){.navlinks a.opt{display:none}}
 @media(max-width:560px){.chip{display:none}.navlinks{display:none}.lang{margin-left:0}}
-/* la marque, le sélecteur et GitHub doivent tenir sans troncature */
+/* la marque et le sélecteur doivent tenir sans troncature */
 @media(max-width:440px){
   .nav-in{gap:10px}
   .brand b{font-size:12.5px}
   .lang button{padding:8px 8px}
-  .gh{padding:8px 10px}
 }
 
 /* ── Boutons ───────────────────────────────────────────────────── */
@@ -528,7 +522,6 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
       <button type="button" data-lang="fr" aria-pressed="true">FR</button>
       <button type="button" data-lang="en" aria-pressed="false">EN</button>
     </div>
-    <a class="gh" href="https://github.com/Tuwshiyah/the-better-inspector">GitHub <span aria-hidden="true">↗</span></a>
   </div>
 </nav>
 
