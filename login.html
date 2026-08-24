@@ -182,6 +182,10 @@ form.addEventListener('submit', async (e) => {
       });
       if (error) throw error;
       if (data.session) location.replace(suite);
+      // Supabase ne signale pas les doublons, pour ne pas révéler qui est inscrit :
+      // il renvoie un utilisateur factice, sans identité. À nous de le dire.
+      else if (data.user && data.user.identities && data.user.identities.length === 0)
+        say('Un compte existe déjà avec cette adresse. Connectez-vous, ou demandez un lien par e-mail.', 'err');
       else say('Compte créé. Ouvrez le lien de confirmation envoyé à ' + addr + '.', 'ok');
 
     } else {
