@@ -133,6 +133,9 @@ function setMode(m) {
 tabs.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.tab)));
 swap.addEventListener('click', () => setMode(mode === 'link' ? 'in' : 'link'));
 
+// arrivée depuis l'invitation du site : on ouvre sur l'inscription
+if (new URLSearchParams(location.search).get('mode') === 'up') setMode('up');
+
 function say(text, tone) {
   msg.textContent = text;
   if (tone) msg.dataset.tone = tone; else delete msg.dataset.tone;

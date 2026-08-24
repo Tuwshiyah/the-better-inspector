@@ -547,6 +547,26 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
   .btn:hover,.card:hover,.pkg:hover{transform:none}
   *{transition-duration:.01ms!important}
 }
+
+/* ── Invitation a ouvrir un compte ─────────────────────────────────
+   Au-dessus du bandeau, qui est en z-index 60. */
+.gate[hidden]{display:none}
+.gate{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:22px;background:rgba(15,18,22,.42);backdrop-filter:blur(3px)}
+.gate-card{width:100%;max-width:410px;background:var(--bg);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:clamp(24px,4vw,32px);box-shadow:0 24px 60px rgba(15,18,22,.22)}
+.gate-tag{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-family:var(--mono);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.gate-tag i{flex:1;height:1px;background:var(--line);display:block}
+.gate-card h3{margin:0 0 10px;font-size:clamp(19px,2.2vw,23px);line-height:1.25;letter-spacing:-.02em}
+.gate-card h3 em{font-style:normal;color:var(--oxide)}
+.gate-card p{margin:0 0 20px;font-size:14px;line-height:1.6;color:var(--ink-2)}
+.gate-acts{display:flex;flex-wrap:wrap;gap:9px}
+.gate-acts .btn{flex:1 1 150px;justify-content:center}
+.gate-close{display:block;width:100%;margin-top:16px;padding:0;background:none;border:0;cursor:pointer;
+  font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted);
+  text-decoration:underline;text-underline-offset:3px;transition:color .16s}
+.gate-close:hover{color:var(--oxide)}
 </style>
 </head>
 
@@ -958,6 +978,22 @@ sont reconstruits à partir des positions du texte."></pre>
   </div>
 </footer>
 
+<div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gate-title">
+  <div class="gate-card">
+    <p class="gate-tag"><span data-i18n="gate.tag">[ accès ]</span><i></i></p>
+    <h3 id="gate-title" data-i18n="gate.h3">Un compte, et vos <em>Markdown</em> vous suivent.</h3>
+    <p data-i18n="gate.body">
+      La conversion se fait toujours dans votre navigateur : le PDF ne part jamais.
+      Le compte sert à retrouver le Markdown produit d'une session à l'autre.
+    </p>
+    <div class="gate-acts">
+      <a class="btn btn-primary" id="gate-up" href="login.html?mode=up" data-i18n="gate.up"><s aria-hidden="true"></s>Créer un compte</a>
+      <a class="btn" id="gate-in" href="login.html" data-i18n="gate.in">Se connecter</a>
+    </div>
+    <button class="gate-close" id="gate-close" type="button" data-i18n="gate.close">Revenir au site</button>
+  </div>
+</div>
+
 <script type="application/json" id="i18n">
 {
  "nav.home": "&lt;home&gt;",
@@ -1088,7 +1124,13 @@ sont reconstruits à partir des positions du texte."></pre>
  "_ogd": "PDF → structured Markdown, fully client-side. Your files never leave the tab.",
  "spec.aria": "Technical specifications",
  "demo.aria": "Choose or drop a PDF file",
- "nav.login": "Sign in"
+ "nav.login": "Sign in",
+ "gate.tag": "[ access ]",
+ "gate.h3": "One account, and your <em>Markdown</em> follows you.",
+ "gate.body": "Conversion still happens in your browser: the PDF never leaves it. The account is what lets you find the Markdown again from one session to the next.",
+ "gate.up": "<s aria-hidden=\"true\"></s>Create an account",
+ "gate.in": "Sign in",
+ "gate.close": "Back to the site"
 }
 </script>
 
@@ -1418,20 +1460,45 @@ try {
   drop.setAttribute('aria-disabled', 'true');
 }
 
-/* ── Entrée du fichier ─────────────────────────────────────── */
-drop.addEventListener('click', () => input.click());
+/* ── Invitation à ouvrir un compte ───────────────────────────
+   Le focus part vers l'action principale et revient d'où il
+   venait : sans cela, refermer laisserait le clavier au début
+   de la page, loin de la zone de dépôt. */
+const gate = el('gate');
+let gateFrom = null;
+
+function openGate() {
+  gateFrom = document.activeElement;
+  gate.hidden = false;
+  document.body.style.overflow = 'hidden';
+  el('gate-up').focus();
+}
+function closeGate() {
+  if (gate.hidden) return;
+  gate.hidden = true;
+  document.body.style.overflow = '';
+  if (gateFrom && gateFrom.focus) gateFrom.focus();
+}
+
+el('gate-close').addEventListener('click', closeGate);
+// seul le fond ferme : un clic dans la carte ne doit pas la dissiper
+gate.addEventListener('click', (e) => { if (e.target === gate) closeGate(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeGate(); });
+
+/* ── Entrée du fichier ───────────────────────────────────────
+   Toutes les portes mènent désormais à l'invitation. handle() et
+   reset() restent en place : c'est l'ouverture du sélecteur qui
+   est remplacée, pas la conversion. */
+drop.addEventListener('click', openGate);
 drop.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGate(); }
 });
 ['dragenter', 'dragover'].forEach((t) =>
   drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add('over'); }));
 ['dragleave', 'drop'].forEach((t) =>
   drop.addEventListener(t, () => drop.classList.remove('over')));
-drop.addEventListener('drop', (e) => {
-  e.preventDefault();
-  const f = e.dataTransfer.files && e.dataTransfer.files[0];
-  if (f) handle(f);
-});
+// un fichier lâché est une intention aussi nette qu'un clic
+drop.addEventListener('drop', (e) => { e.preventDefault(); openGate(); });
 input.addEventListener('change', () => { if (input.files[0]) handle(input.files[0]); });
 fclear.addEventListener('click', reset);
 
