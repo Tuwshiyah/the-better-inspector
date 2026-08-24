@@ -215,8 +215,38 @@ a{color:inherit}
 .lang button:hover{color:var(--ink);background:var(--bg-alt)}
 /* la langue active reprend l'accent du titre (« Markdown propre ») */
 .lang button[aria-pressed=true]{color:var(--oxide);background:var(--oxide-soft);font-weight:500}
+/* ── Menu mobile ───────────────────────────────────────────────────
+   Le bouton n'existe que sous 800 px, la ou la barre de liens n'a
+   plus la place de tenir : elle s'y deplie sous la barre au lieu de
+   disparaitre sans recours. */
+.burger{display:none;align-items:center;justify-content:center;flex:none;
+  width:33px;height:33px;padding:0;cursor:pointer;color:var(--muted);
+  background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+  transition:color .16s,background .16s}
+.burger:hover{color:var(--ink);background:var(--bg-alt)}
+.burger[aria-expanded=true]{color:var(--oxide);background:var(--oxide-soft);border-color:var(--oxide-line)}
+.burger svg{width:15px;height:15px;display:block}
+.burger .ico-close,.burger[aria-expanded=true] .ico-open{display:none}
+.burger[aria-expanded=true] .ico-close{display:block}
+
 @media(max-width:1100px){.navlinks a.opt{display:none}}
-@media(max-width:800px){.navlinks{display:none}}
+@media(max-width:800px){
+  .burger{display:inline-flex}
+  /* .nav est sticky, donc positionne : le panneau s'ancre dessus.
+     justify-self:center vient de la barre horizontale et ferait
+     retrecir le panneau au lieu de l'etirer entre left et right */
+  .navlinks{display:none;position:absolute;left:0;right:0;top:60px;
+    justify-self:stretch;
+    flex-direction:column;border-radius:0;border-left:0;border-right:0;
+    box-shadow:0 14px 30px rgba(15,18,22,.10)}
+  .navlinks.open{display:flex}
+  .navlinks a{border-right:0;border-bottom:1px solid var(--line);
+    padding:13px 22px;font-size:12px}
+  .navlinks a:last-child{border-bottom:0}
+  /* les deux entrees repliees des 1100 px retrouvent leur place ici :
+     le panneau a la hauteur qu'une barre horizontale n'avait pas */
+  .navlinks a.opt{display:block}
+}
 @media(max-width:560px){.chip{display:none}}
 /* la marque et le sélecteur doivent tenir sans troncature */
 @media(max-width:440px){
@@ -281,11 +311,6 @@ h2 em{font-style:normal;color:var(--oxide)}
   color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:5px 9px}
 .tag-hot{color:var(--oxide);border-color:var(--oxide-line);background:var(--oxide-soft)}
 .tag-code{text-transform:none;letter-spacing:.02em}
-
-/* l'épigraphe technique, en commentaire de code */
-.epigraph{margin:0 0 clamp(20px,2.6vw,30px);font-family:var(--mono);
-  font-size:clamp(11.5px,1vw,13px);line-height:1.85;color:var(--muted);max-width:70ch}
-.epigraph b{font-weight:400;color:var(--oxide)}
 
 h1{margin:0;font-size:clamp(31px,3.9vw,52px);font-weight:700;line-height:.98;letter-spacing:-.038em;max-width:17ch}
 h1 em{font-style:normal;color:var(--oxide)}
@@ -508,7 +533,6 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
 .js .rv.in{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
 @keyframes fade-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .js .tags{animation:fade-up .5s both}
-.js .epigraph{animation:fade-up .5s .12s both}
 .js h1{animation:fade-up .6s .26s both cubic-bezier(.22,1,.36,1)}
 .js .lede,.js .cta-row,.js .stats{animation:fade-up .6s .46s both}
 .js .hero .term{animation:fade-up .6s .52s both}
@@ -517,7 +541,7 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .js .rv,.js .rv.in{opacity:1;transform:none;transition:none}
-  .js .tags,.js .epigraph,.js h1,.js .lede,.js .cta-row,.js .stats,.js .hero .term,.js .pkgs,.js .specs{animation:none}
+  .js .tags,.js h1,.js .lede,.js .cta-row,.js .stats,.js .hero .term,.js .pkgs,.js .specs{animation:none}
   .dot-run,.tcur{animation:none}
   .tcur{display:none}
   .btn:hover,.card:hover,.pkg:hover{transform:none}
@@ -538,7 +562,7 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
       </svg>
       <b>The Better Inspector</b><span class="chip">v1.0</span>
     </a>
-    <div class="navlinks">
+    <div class="navlinks" id="navlinks">
       <a class="cur" href="#haut" data-i18n="nav.home">&lt;accueil&gt;</a>
       <a href="#demo" data-i18n="nav.demo">Démo</a>
       <a href="#jetons" data-i18n="nav.tokens">Jetons</a>
@@ -552,6 +576,15 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
       <a class="gh" href="login.html" data-i18n="nav.login">Connexion</a>
+      <button class="burger" id="burger" type="button" aria-label="Menu"
+              aria-expanded="false" aria-controls="navlinks">
+        <svg class="ico-open" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M1 3.5h14M1 8h14M1 12.5h14" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <svg class="ico-close" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M3 3l10 10M13 3L3 13" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </button>
     </div>
   </div>
 </nav>
@@ -568,11 +601,6 @@ footer{border-top:1px solid var(--line);padding:36px 0 46px}
             <span class="tag" data-i18n="hero.tag2">Vos fichiers ne quittent pas l'onglet</span>
             <span class="tag tag-code">pdf.js · Apache-2.0</span>
           </div>
-
-          <p class="epigraph" data-i18n="hero.epigraph">
-            // un PDF ne stocke pas de phrases. il stocke des opérateurs <b>Tj</b>,<br>
-            // des matrices de texte <b>Tm</b> et des CMaps <b>ToUnicode</b>.
-          </p>
         </div>
 
         <div class="hero-body">
@@ -940,7 +968,6 @@ sont reconstruits à partir des positions du texte."></pre>
  "nav.limits": "Limits",
  "hero.tag1": "No install · no server",
  "hero.tag2": "Your files never leave the tab",
- "hero.epigraph": "// a PDF does not store sentences. it stores <b>Tj</b> operators,<br>\n            // text matrices <b>Tm</b> and <b>ToUnicode</b> CMaps.",
  "hero.h1": "Turn a PDF into <em>clean Markdown</em>",
  "hero.lede": "If you build document pipelines or RAG, you know the problem: tables get scrambled, columns overlap, and the context collapses before it even reaches the model. <strong>The Better Inspector</strong> cleans the document at the source, inside your browser.",
  "hero.cta1": "<s aria-hidden=\"true\"></s>Drop a PDF",
@@ -1118,6 +1145,42 @@ sont reconstruits à partir des positions du texte."></pre>
   var saved = null;
   try { saved = localStorage.getItem('tbi-lang'); } catch (_) {}
   apply(saved || (/^fr\b/i.test(navigator.language || '') ? 'fr' : 'en'));
+})();
+
+/* ── Menu mobile ───────────────────────────────────────────────────
+   Le panneau est la barre de liens elle-meme, repliee : une seule
+   liste a maintenir, et les traductions suivent sans rien dupliquer. */
+(function () {
+  var burger = document.getElementById('burger');
+  var links = document.getElementById('navlinks');
+  if (!burger || !links) return;
+
+  function setOpen(open) {
+    links.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+  }
+
+  burger.addEventListener('click', function () {
+    setOpen(burger.getAttribute('aria-expanded') !== 'true');
+  });
+
+  // une ancre suivie, le menu n'a plus de raison de rester ouvert
+  links.addEventListener('click', function (e) {
+    if (e.target.closest('a')) setOpen(false);
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('#navlinks') && !e.target.closest('#burger')) setOpen(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setOpen(false);
+  });
+
+  // revenir au grand format le menu ouvert laisserait un panneau
+  // orphelin, que plus aucun bouton visible ne pourrait refermer
+  addEventListener('resize', function () {
+    if (innerWidth > 800) setOpen(false);
+  });
 })();
 </script>
 
