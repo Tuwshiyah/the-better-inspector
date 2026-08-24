@@ -77,13 +77,21 @@ Le logo est chargé depuis `{{ .SiteURL }}/assets/logo-email.png`, donc il suit
 automatiquement le domaine configuré dans Supabase. C'est un PNG et non le SVG
 du site : la plupart des clients de messagerie n'affichent pas le SVG.
 
-**Installation sur le projet hébergé.** Dans le tableau de bord Supabase,
-*Authentication → Emails*, coller le contenu de chaque fichier dans le gabarit
-correspondant et reprendre les objets déclarés dans `supabase/config.toml`.
+**Installation sur le projet hébergé.**
 
-Ne pas utiliser `supabase config push` : la commande pousse *toute* la
-configuration d'authentification et écraserait le SMTP, la Site URL et les
-adresses de redirection réglées dans le tableau de bord.
+```bash
+supabase config push
+```
+
+`config.toml` a été aligné sur l'état distant du projet, de sorte que cette
+commande ne modifie que les gabarits. Avant de la relancer un jour, vérifier le
+diff qu'elle affiche : elle pousse *toute* la configuration d'authentification,
+et une valeur locale qui aurait divergé écraserait celle du tableau de bord.
+
+Deux prérequis côté Supabase : un **SMTP personnalisé** doit être configuré —
+sur l'offre gratuite, les gabarits restent verrouillés tant que le service
+d'e-mail par défaut est utilisé — et la **Site URL** doit pointer sur le domaine
+réel, faute de quoi le logo des e-mails ne se charge pas.
 
 Ces e-mails sont en français uniquement. Supabase ne sélectionne pas de gabarit
 selon la langue du destinataire.
