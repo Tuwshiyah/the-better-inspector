@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<title>Réinitialiser votre mot de passe</title>
+</head>
+<body style="margin:0;padding:0;background:#f7f8f9;">
+
+<!-- ligne d'aperçu, visible dans la liste des messages, pas dans le corps -->
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">Choisissez un nouveau mot de passe.</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f8f9;">
+<tr><td align="center" style="padding:32px 16px;">
+
+  <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0"
+         style="width:560px;max-width:100%;background:#ffffff;border:1px solid #e4e6ea;border-radius:12px;">
+
+    <!-- marque -->
+    <tr><td style="padding:28px 32px 0 32px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td style="padding-right:10px;line-height:0;">
+            <img src="{{ .SiteURL }}/assets/logo-email.png" width="34" height="34" alt=""
+                 style="display:block;width:34px;height:34px;border:0;border-radius:8px;">
+          </td>
+          <td style="font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:14px;font-weight:600;color:#0f1216;letter-spacing:-.2px;">
+            The Better Inspector
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+
+    <!-- intertitre -->
+    <tr><td style="padding:26px 32px 0 32px;font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#767e88;">
+      Mot de passe <span style="color:#b4442e;">&gt;</span>
+    </td></tr>
+
+    <!-- titre -->
+    <tr><td style="padding:10px 32px 0 32px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:27px;line-height:1.2;font-weight:700;letter-spacing:-.8px;color:#0f1216;">
+      Choisissez un nouveau mot de passe.
+    </td></tr>
+
+    <!-- texte -->
+    <tr><td style="padding:14px 32px 0 32px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#3d444d;">
+      Vous avez demandé à réinitialiser le mot de passe de votre compte. Ce lien vous mènera à un formulaire où en définir un nouveau.
+    </td></tr>
+
+    <!-- bouton -->
+    <tr><td style="padding:26px 32px 0 32px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+        <tr><td style="background:#0f1216;border-radius:8px;">
+          <a href="{{ .ConfirmationURL }}"
+             style="display:inline-block;padding:14px 24px;font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:8px;">
+            Réinitialiser
+          </a>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <!-- repli : certains clients n'ouvrent pas les boutons -->
+    <tr><td style="padding:20px 32px 0 32px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#767e88;">
+      Si le bouton ne fonctionne pas, copiez cette adresse dans votre navigateur :<br>
+      <a href="{{ .ConfirmationURL }}" style="color:#b4442e;word-break:break-all;font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:12px;">{{ .ConfirmationURL }}</a>
+    </td></tr>
+
+    <tr><td style="padding:26px 32px 0 32px;">
+      <div style="height:1px;background:#eef0f2;line-height:1px;font-size:0;">&nbsp;</div>
+    </td></tr>
+
+    <!-- garde-fou -->
+    <tr><td style="padding:18px 32px 30px 32px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12.5px;line-height:1.6;color:#767e88;">
+      Ce lien expire au bout d'une heure. Tant que vous ne l'ouvrez pas, votre mot de passe actuel reste valable.
+    </td></tr>
+  </table>
+
+  <!-- pied -->
+  <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:560px;max-width:100%;">
+    <tr><td style="padding:18px 32px 0 32px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#8b9098;">
+      Vos PDF sont convertis dans votre navigateur : ils ne nous sont jamais transmis.
+      Seul le Markdown que vous enregistrez est conservé.
+    </td></tr>
+  </table>
+
+</td></tr>
+</table>
+</body>
+</html>

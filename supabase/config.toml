@@ -243,6 +243,24 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
+# ── Gabarits d'e-mail de The Better Inspector ────────────────────
+# Utilises par `supabase start` en local. Sur le projet heberge, ils
+# se collent dans Authentication > Emails : `supabase config push`
+# pousserait TOUTE la configuration auth et ecraserait le SMTP Brevo,
+# la Site URL et les redirections.
+
+[auth.email.template.confirmation]
+subject = "Confirmez votre adresse"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.magic_link]
+subject = "Votre lien de connexion"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.recovery]
+subject = "Reinitialiser votre mot de passe"
+content_path = "./supabase/templates/recovery.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"

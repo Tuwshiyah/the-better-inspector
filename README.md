@@ -66,6 +66,28 @@ vendor/fonts/       Archivo et IBM Plex Mono (SIL OFL)
 Le convertisseur tient dans le `<script type="module">` de `index.html`. Aucune
 minification, aucun paquet : le code que vous lisez est celui qui tourne.
 
+## E-mails d'authentification
+
+Les gabarits vivent dans `supabase/templates/` : confirmation d'inscription,
+lien de connexion, réinitialisation de mot de passe. Ils sont en HTML tabulaire
+avec styles en ligne, sans police web, pour tenir dans les clients de messagerie
+les plus rétifs.
+
+Le logo est chargé depuis `{{ .SiteURL }}/assets/logo-email.png`, donc il suit
+automatiquement le domaine configuré dans Supabase. C'est un PNG et non le SVG
+du site : la plupart des clients de messagerie n'affichent pas le SVG.
+
+**Installation sur le projet hébergé.** Dans le tableau de bord Supabase,
+*Authentication → Emails*, coller le contenu de chaque fichier dans le gabarit
+correspondant et reprendre les objets déclarés dans `supabase/config.toml`.
+
+Ne pas utiliser `supabase config push` : la commande pousse *toute* la
+configuration d'authentification et écraserait le SMTP, la Site URL et les
+adresses de redirection réglées dans le tableau de bord.
+
+Ces e-mails sont en français uniquement. Supabase ne sélectionne pas de gabarit
+selon la langue du destinataire.
+
 ## Traductions
 
 Le français est la source, écrite dans le HTML. L'anglais vit dans le bloc
