@@ -102,6 +102,14 @@ export function humanError(e) {
   if (m.includes('user already registered')) return 'Un compte existe déjà avec cette adresse.';
   if (m.includes('password should be at least')) return 'Le mot de passe doit faire au moins 6 caractères.';
   if (m.includes('rate limit') || m.includes('too many')) return 'Trop de tentatives. Réessayez dans quelques minutes.';
+  if (m.includes('signups not allowed') || m.includes('should create user'))
+    return 'Aucun compte avec cette adresse. Créez-en un d’abord.';
+  if (m.includes('otp_expired') || m.includes('token has expired'))
+    return 'Ce lien a expiré. Demandez-en un nouveau.';
+  if (m.includes('redirect') && m.includes('not allowed'))
+    return 'Adresse de redirection non autorisée dans le projet Supabase.';
+  if (m.includes('error sending') || m.includes('smtp'))
+    return 'L’e-mail n’a pas pu être envoyé. Vérifiez la configuration SMTP du projet.';
   if (m.includes('failed to fetch')) return 'Serveur injoignable. Vérifiez votre connexion.';
   return e && e.message ? e.message : 'Une erreur est survenue.';
 }

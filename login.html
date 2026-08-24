@@ -9,13 +9,23 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Crect%20width%3D%2724%27%20height%3D%2724%27%20rx%3D%275%27%20fill%3D%27%230f1216%27%2F%3E%3Crect%20x%3D%274.5%27%20y%3D%273%27%20width%3D%275%27%20height%3D%274.8%27%20fill%3D%27%23b4442e%27%2F%3E%3Crect%20x%3D%274.5%27%20y%3D%2710.2%27%20width%3D%275.2%27%20height%3D%2710.9%27%20fill%3D%27%23fff%27%2F%3E%3Cpath%20fill%3D%27%23fff%27%20fill-rule%3D%27evenodd%27%20d%3D%27M9.5%206H14.8a3.7%203.7%200%200%201%200%207.4H15.5a3.95%203.95%200%200%201%200%207.9H9.5Z%20M14.45%207.95a1.75%201.75%200%201%200%200%203.5%201.75%201.75%200%200%200%200-3.5Z%20M15.15%2015.35a2.1%202.1%200%201%200%200%204.2%202.1%202.1%200%200%200%200-4.2Z%27%2F%3E%3C%2Fsvg%3E">
 <link rel="stylesheet" href="./assets/ui.css">
 <style>
-  .wrap{max-width:420px;margin-inline:auto;padding:clamp(40px,7vw,84px) 0}
+  .wrap{max-width:420px;margin-inline:auto;padding:clamp(36px,6vw,76px) 0}
   .tabs{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:22px}
   .tabs button{flex:1;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
     padding:10px;background:none;border:0;border-right:1px solid var(--line);color:var(--muted);cursor:pointer;transition:.16s}
   .tabs button:last-child{border-right:0}
   .tabs button[aria-pressed=true]{color:var(--oxide);background:var(--oxide-soft);font-weight:500}
   .wrap .btn{width:100%;margin-top:4px}
+  .swap{display:block;width:100%;margin-top:14px;padding:0;background:none;border:0;cursor:pointer;
+    font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted);text-align:center;
+    text-decoration:underline;text-underline-offset:3px;transition:color .16s}
+  .swap:hover{color:var(--oxide)}
+  .hint{margin:0 0 18px;padding:11px 13px;border-radius:var(--r);
+    background:var(--oxide-soft);border:1px solid var(--oxide-line);
+    font-size:13px;line-height:1.5;color:var(--ink-2)}
+  .match{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;margin-top:2px;min-height:1.2em}
+  .match[data-ok=no]{color:var(--oxide)}
+  .match[data-ok=yes]{color:var(--live)}
   .back{display:inline-flex;align-items:center;gap:7px;margin-top:24px;font-family:var(--mono);
     font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
   .back:hover{color:var(--oxide)}
@@ -38,21 +48,36 @@
   </p>
 
   <div class="tabs" role="group" aria-label="Connexion ou création de compte">
-    <button type="button" data-mode="in" aria-pressed="true">Se connecter</button>
-    <button type="button" data-mode="up" aria-pressed="false">Créer un compte</button>
+    <button type="button" data-tab="in" aria-pressed="true">Se connecter</button>
+    <button type="button" data-tab="up" aria-pressed="false">Créer un compte</button>
   </div>
+
+  <p class="hint" id="hint" hidden>
+    Nous vous envoyons un lien à usage unique. Ouvrez-le depuis cet appareil,
+    vous serez connecté sans mot de passe.
+  </p>
 
   <form id="form" novalidate>
     <div class="field">
       <label for="email">Adresse e-mail</label>
       <input id="email" type="email" autocomplete="email" required placeholder="vous@exemple.fr">
     </div>
-    <div class="field">
+
+    <div class="field" id="f-pw">
       <label for="pw">Mot de passe</label>
-      <input id="pw" type="password" autocomplete="current-password" required minlength="6" placeholder="au moins 6 caractères">
+      <input id="pw" type="password" autocomplete="current-password" minlength="6" placeholder="au moins 6 caractères">
     </div>
+
+    <div class="field" id="f-pw2" hidden>
+      <label for="pw2">Confirmez le mot de passe</label>
+      <input id="pw2" type="password" autocomplete="new-password" minlength="6" placeholder="saisissez-le à nouveau">
+      <span class="match" id="match"></span>
+    </div>
+
     <button class="btn btn-primary" id="go" type="submit"><s aria-hidden="true"></s><span id="golabel">Se connecter</span></button>
   </form>
+
+  <button class="swap" id="swap" type="button">Recevoir plutôt un lien de connexion par e-mail</button>
 
   <p class="msg" id="msg" role="status" aria-live="polite"></p>
   <a class="back" href="index.html">← Retour au site</a>
@@ -64,66 +89,105 @@ import { db, currentUser, humanError, MARK } from './assets/session.js';
 
 document.getElementById('brand').insertAdjacentHTML('afterbegin', MARK);
 
-const form = document.getElementById('form');
-const email = document.getElementById('email');
-const pw    = document.getElementById('pw');
-const go    = document.getElementById('go');
-const label = document.getElementById('golabel');
-const msg   = document.getElementById('msg');
-const tag   = document.getElementById('tag');
-const title = document.getElementById('title');
-const tabs  = [...document.querySelectorAll('.tabs button')];
+const $ = (id) => document.getElementById(id);
+const form = $('form'), email = $('email'), pw = $('pw'), pw2 = $('pw2');
+const fPw = $('f-pw'), fPw2 = $('f-pw2'), match = $('match');
+const go = $('go'), label = $('golabel'), msg = $('msg'), hint = $('hint');
+const tag = $('tag'), title = $('title'), swap = $('swap');
+const tabs = [...document.querySelectorAll('.tabs button')];
 
-// où revenir après connexion, sans jamais sortir du site
+// destination après connexion, jamais hors du site
 const suite = (() => {
   const v = new URLSearchParams(location.search).get('suite') || 'app.html';
   return /^[\w.-]+\.html$/.test(v) ? v : 'app.html';
 })();
+const redirectTo = new URL(suite, location.href).href;
 
+/* Trois états : mot de passe, lien magique, inscription. */
 let mode = 'in';
 
 function setMode(m) {
   mode = m;
-  tabs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
-  const inMode = m === 'in';
-  label.textContent = inMode ? 'Se connecter' : 'Créer le compte';
-  tag.textContent   = inMode ? 'Connexion' : 'Inscription';
-  title.innerHTML   = inMode ? 'Votre <em>espace</em>.' : 'Créez votre <em>espace</em>.';
-  pw.autocomplete   = inMode ? 'current-password' : 'new-password';
+  const up = m === 'up', link = m === 'link';
+
+  tabs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tab === (up ? 'up' : 'in'))));
+  fPw.hidden = link;
+  fPw2.hidden = !up;
+  hint.hidden = !link;
+
+  label.textContent = up ? 'Créer le compte' : link ? 'Envoyer le lien' : 'Se connecter';
+  tag.textContent   = up ? 'Inscription' : link ? 'Lien de connexion' : 'Connexion';
+  title.innerHTML   = up ? 'Créez votre <em>espace</em>.' : 'Votre <em>espace</em>.';
+  pw.autocomplete   = up ? 'new-password' : 'current-password';
+
+  swap.hidden = up;
+  swap.textContent = link
+    ? 'Utiliser plutôt mon mot de passe'
+    : 'Recevoir plutôt un lien de connexion par e-mail';
+
+  match.textContent = '';
+  delete match.dataset.ok;
   say('');
 }
-tabs.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+tabs.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.tab)));
+swap.addEventListener('click', () => setMode(mode === 'link' ? 'in' : 'link'));
 
 function say(text, tone) {
   msg.textContent = text;
   if (tone) msg.dataset.tone = tone; else delete msg.dataset.tone;
 }
 
-// déjà connecté : inutile de redemander
+/* Concordance des mots de passe, signalée pendant la saisie. */
+function checkMatch() {
+  if (mode !== 'up' || !pw2.value) { match.textContent = ''; delete match.dataset.ok; return true; }
+  const ok = pw.value === pw2.value;
+  match.textContent = ok ? 'Les mots de passe correspondent.' : 'Les mots de passe diffèrent.';
+  match.dataset.ok = ok ? 'yes' : 'no';
+  return ok;
+}
+pw.addEventListener('input', checkMatch);
+pw2.addEventListener('input', checkMatch);
+
+// déjà connecté, ou revenu depuis un lien magique : on enchaîne
 currentUser().then((u) => { if (u) location.replace(suite); });
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  if (!email.value.trim() || pw.value.length < 6) {
-    say('Renseignez une adresse valide et un mot de passe d’au moins 6 caractères.', 'err');
-    return;
+  const addr = email.value.trim();
+  if (!addr) { say('Renseignez votre adresse e-mail.', 'err'); return; }
+
+  if (mode !== 'link') {
+    if (pw.value.length < 6) { say('Le mot de passe doit faire au moins 6 caractères.', 'err'); return; }
+    if (mode === 'up' && pw.value !== pw2.value) {
+      say('Les deux mots de passe ne correspondent pas.', 'err');
+      pw2.focus(); return;
+    }
   }
+
   go.disabled = true;
-  say(mode === 'in' ? 'Connexion…' : 'Création du compte…');
+  say(mode === 'up' ? 'Création du compte…' : mode === 'link' ? 'Envoi du lien…' : 'Connexion…');
 
   try {
-    if (mode === 'in') {
-      const { error } = await db.auth.signInWithPassword({ email: email.value.trim(), password: pw.value });
+    if (mode === 'link') {
+      const { error } = await db.auth.signInWithOtp({
+        email: addr, options: { emailRedirectTo: redirectTo, shouldCreateUser: false }
+      });
       if (error) throw error;
-      location.replace(suite);
-    } else {
+      say('Lien envoyé à ' + addr + '. Ouvrez-le depuis cet appareil.', 'ok');
+
+    } else if (mode === 'up') {
       const { data, error } = await db.auth.signUp({
-        email: email.value.trim(), password: pw.value,
-        options: { emailRedirectTo: new URL('app.html', location.href).href }
+        email: addr, password: pw.value, options: { emailRedirectTo: redirectTo }
       });
       if (error) throw error;
       if (data.session) location.replace(suite);
-      else say('Compte créé. Ouvrez le lien de confirmation envoyé à ' + email.value.trim() + '.', 'ok');
+      else say('Compte créé. Ouvrez le lien de confirmation envoyé à ' + addr + '.', 'ok');
+
+    } else {
+      const { error } = await db.auth.signInWithPassword({ email: addr, password: pw.value });
+      if (error) throw error;
+      location.replace(suite);
     }
   } catch (err) {
     say(humanError(err), 'err');
