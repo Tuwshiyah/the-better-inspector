@@ -35,17 +35,19 @@ export async function convert(file, onPage) {
     if (onPage) onPage(n, limit);
   }
 
-  const markdown = pages.map((p) => toMarkdown(p)).filter(Boolean).join('\n\n');
+  const markdown = pages.map((p, i) => toMarkdown(p, i + 1)).filter(Boolean).join('\n\n');
+  const count = (k) => pages.reduce((n, p) => n + p[k].length, 0);
   return {
     name: file.name, bytes: file.size,
     type: classify(pages), total, limit,
+    figures: count('figures'), signatures: count('signatures'),
     markdown, chars: markdown.length,
     tokens: Math.round(markdown.length / 4),   // ~4 caractères par jeton
     ms: Math.round(performance.now() - t0)
   };
 }
 
-/* ── Lecture d'une page : texte positionné + présence d'images ── */
+/* ── Lecture d'une page : texte positionné, figures, signatures ── */
 async function readPage(doc, n) {
   const page = await doc.getPage(n);
   const content = await page.getTextContent();
@@ -65,17 +67,91 @@ async function readPage(doc, n) {
       bold: /bold|black|heavy|semibold/i.test(i.fontName || '')
     }));
 
-  let images = 0;
-  if (n <= 5) {
-    try {
-      const ops = await page.getOperatorList();
-      const IMG = [pdfjs.OPS.paintImageXObject, pdfjs.OPS.paintJpegXObject, pdfjs.OPS.paintInlineImageXObject];
-      images = ops.fnArray.filter((f) => IMG.indexOf(f) !== -1).length;
-    } catch (_) { /* la détection d'images est optionnelle */ }
-  }
+  const figures = await readFigures(page);
+  const signatures = await readSignatures(page);
 
   page.cleanup();
-  return { items, images, width: view.width, height: view.height };
+  return { items, figures, signatures, images: figures.length,
+           width: view.width, height: view.height };
+}
+
+/* ── Figures ─────────────────────────────────────────────────────
+   pdf.js ne donne pas la position des images : il faut suivre la
+   matrice courante le long de la liste d'opérateurs. Une image
+   occupe toujours le carré unité, que cette matrice pose sur la
+   page — sa taille et son emplacement s'en déduisent.
+
+   On ne sort pas les octets : ils devraient être encodés en base64
+   dans le Markdown, qui est stocké tel quel, ou téléversés quelque
+   part. Un repère à la bonne place dit à un pipeline qu'une figure
+   existait et où, sans que rien ne quitte l'onglet. */
+
+// en deçà ce sont des puces, des filets ou des logos d'en-tête :
+// les signaler noierait les vraies figures
+const MIN_FIGURE = 24;
+const MAX_FIGURES = 12;
+
+function mulCTM(a, b) {
+  return [
+    a[0] * b[0] + a[1] * b[2],
+    a[0] * b[1] + a[1] * b[3],
+    a[2] * b[0] + a[3] * b[2],
+    a[2] * b[1] + a[3] * b[3],
+    a[4] * b[0] + a[5] * b[2] + b[4],
+    a[4] * b[1] + a[5] * b[3] + b[5]
+  ];
+}
+
+async function readFigures(page) {
+  let ops;
+  try { ops = await page.getOperatorList(); }
+  catch (_) { return []; }        // la détection reste optionnelle
+
+  const PAINT = [pdfjs.OPS.paintImageXObject, pdfjs.OPS.paintJpegXObject,
+                 pdfjs.OPS.paintInlineImageXObject, pdfjs.OPS.paintImageMaskXObject];
+  const found = [];
+  const stack = [];
+  let ctm = [1, 0, 0, 1, 0, 0];
+
+  for (let i = 0; i < ops.fnArray.length; i++) {
+    const fn = ops.fnArray[i];
+    if (fn === pdfjs.OPS.save) { stack.push(ctm.slice()); continue; }
+    if (fn === pdfjs.OPS.restore) { ctm = stack.pop() || [1, 0, 0, 1, 0, 0]; continue; }
+    if (fn === pdfjs.OPS.transform) { ctm = mulCTM(ops.argsArray[i], ctm); continue; }
+    if (PAINT.indexOf(fn) === -1) continue;
+
+    // les quatre coins du carré unité, une fois la matrice appliquée
+    const xs = [ctm[4], ctm[0] + ctm[4], ctm[2] + ctm[4], ctm[0] + ctm[2] + ctm[4]];
+    const ys = [ctm[5], ctm[1] + ctm[5], ctm[3] + ctm[5], ctm[1] + ctm[3] + ctm[5]];
+    const w = Math.max.apply(null, xs) - Math.min.apply(null, xs);
+    const h = Math.max.apply(null, ys) - Math.min.apply(null, ys);
+    if (w < MIN_FIGURE || h < MIN_FIGURE) continue;
+    found.push({ y: Math.max.apply(null, ys), w: Math.round(w), h: Math.round(h) });
+  }
+
+  // une figure découpée en tuiles ne doit compter que pour une
+  found.sort((a, b) => b.y - a.y);
+  const kept = [];
+  found.forEach((f) => {
+    const prev = kept[kept.length - 1];
+    if (prev && Math.abs(prev.y - f.y) < 6) return;
+    kept.push(f);
+  });
+  return kept.slice(0, MAX_FIGURES);
+}
+
+/* ── Signatures ──────────────────────────────────────────────────
+   On repère le champ, pas la validité : vérifier une signature
+   demande de lire du PKCS#7 et des chaînes de certificats, ce que
+   pdf.js ne fait pas. Savoir qu'un document en porte un, et où,
+   est déjà ce qui manque à un pipeline. */
+async function readSignatures(page) {
+  try {
+    const annots = await page.getAnnotations();
+    return annots
+      .filter((a) => a.fieldType === 'Sig')
+      .map((a) => ({ y: a.rect ? Math.max(a.rect[1], a.rect[3]) : 0 }));
+  } catch (_) { return []; }
 }
 
 /* ── Classification du document ─────────────────── */
@@ -272,10 +348,25 @@ function looksLikeSection(line) {
 }
 
 /* ── Conversion ───────────────────────────────────────────────── */
-function toMarkdown(page) {
-  if (!page.items.length) return '';
+/* Les repères de figure et de signature, du haut de la page vers le
+   bas : « image » et « signature » se lisent dans les deux langues du
+   site, le Markdown n'a donc pas à être traduit. */
+function pageMarks(page, n) {
+  const marks = [];
+  page.figures.forEach((f) =>
+    marks.push({ y: f.y, text: '> \u25c7 image \u00b7 page ' + n + ' \u00b7 ' + f.w + ' \u00d7 ' + f.h + ' pt' }));
+  page.signatures.forEach((s) =>
+    marks.push({ y: s.y, text: '> \u25c7 signature \u00b7 page ' + n }));
+  return marks.sort((a, b) => b.y - a.y);
+}
+
+function toMarkdown(page, n) {
+  const marks = pageMarks(page, n);
+  // une page sans texte peut porter un scan ou un champ de signature :
+  // elle ne doit plus disparaître silencieusement
+  if (!page.items.length) return marks.map((m) => m.text).join('\n\n');
   const flow = orderLines(clusterRows(page.items), page.width, page.height);
-  if (!flow.length) return '';
+  if (!flow.length) return marks.map((m) => m.text).join('\n\n');
   const body = median(flow.map((l) => l.h)) || 10;
   const levels = sizeLevels(flow, body);
 
@@ -295,10 +386,22 @@ function toMarkdown(page) {
     table = null;
   };
 
+  let mark = 0;
+  // un repère ne s'insère jamais au milieu d'un tableau : on attend
+  // que la rangée en cours soit close
+  const flushMarks = (untilY) => {
+    while (mark < marks.length && (untilY === null || marks[mark].y >= untilY)) {
+      flushPara();
+      blocks.push(marks[mark].text);
+      mark++;
+    }
+  };
+
   for (let i = 0; i < flow.length; i++) {
     const l = flow[i];
     const next = flow[i + 1];
     const segs = segments(l);
+    if (!table) flushMarks(l.y);
 
     // Tableau : au moins deux lignes consécutives aux colonnes alignées.
     if (segs.length >= 3 && next && alignedRows(segs, segments(next))) {
@@ -347,6 +450,7 @@ function toMarkdown(page) {
   }
   flushTable();
   flushPara();
+  flushMarks(null);
 
   // les puces consécutives forment une seule liste, sans ligne vide entre elles
   const isItem = (s) => /^(-|\d{1,2}\.)\s/.test(s);

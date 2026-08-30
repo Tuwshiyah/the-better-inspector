@@ -35,7 +35,8 @@
   <p class="sub">
     Vous pouvez en déposer plusieurs d'un coup, ils sont traités l'un après l'autre.
     La conversion se fait dans votre navigateur : le PDF ne part jamais.
-    Seul le Markdown produit est enregistré dans votre espace.
+    Seul le Markdown produit est enregistré dans votre espace, où il est
+    conservé <strong>24 heures</strong> avant d'être supprimé.
   </p>
 
   <input id="file" type="file" accept=".pdf,application/pdf" multiple hidden>
@@ -166,6 +167,8 @@ function addRow(name, { r, err }) {
   const meta = err
     ? '<span class="hot">' + esc(err) + '</span>'
     : esc(r.type) + ' · ' + r.limit + (r.limit > 1 ? ' pages' : ' page')
+      + (r.figures ? ' · ' + nf(r.figures) + (r.figures > 1 ? ' images' : ' image') : '')
+      + (r.signatures ? ' · ' + nf(r.signatures) + ' signature' + (r.signatures > 1 ? 's' : '') : '')
       + ' · ≈ ' + nf(r.tokens) + ' jetons · ' + r.ms + ' ms';
   el.innerHTML =
     '<div class="row-main"><div class="row-name">' + esc(name) + '</div>' +
