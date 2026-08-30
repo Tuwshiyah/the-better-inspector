@@ -8,7 +8,7 @@
 // la vitrine et l'application ne vivent pas au même niveau
 export const PDFJS_PATH = new URL('../vendor/pdfjs/', import.meta.url).href;
 export const MAX_BYTES = 25 * 1024 * 1024;
-export const MAX_PAGES = 40;
+export const MAX_PAGES = 100;
 
 let pdfjs = null;
 
